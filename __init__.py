@@ -7,7 +7,7 @@ bl_info = {
   "support": "TESTING",
   "category": "UI",
   "warning" : "",
-  "wiki_url": "",
+  "wiki_url": "https://github.com/land-Y/SItoB/wiki",
   "tracker_url": "https://cveld.net/"
 }
 
@@ -130,8 +130,8 @@ class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 
 		elif self.tab_addon_menu=="Link":
 			row = layout.row()
-			row.label(text="Link:")
-			row.operator( "wm.url_open", text="cvELD", icon="URL").url = "https://cvELD.net"
+			row.label(text="Support Twitter:")
+			row.operator( "wm.url_open", text="cvELD", icon="URL").url = "https://twitter.com/cvELD_info"
 
 
 keymap_Softimage = []
