@@ -15,15 +15,21 @@ C:\Users\(自分のコンピューター名)\AppData\Roaming\Blender Foundation\
 
 ■注意
 Blender2.9x で開発しています。
+
 2.83でも動くとは思いますが、基本確認しません。
 
 
 ■English ver
+
 Blender's language settings are available in English and Japanese.
+
 Document is only available in Japanese.
+
 Please use the translation site.
+
 https://www.deepl.com/home
 
 
-サポートはTwitterにて
+■サポートはTwitterにて
+
 https://twitter.com/cvELD_info
