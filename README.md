@@ -7,7 +7,9 @@ Softimageユーザー向けのBlender用アドオンを公開しています。
 
 ■インストール方法
 ZIPをダウンロード後、以下に解凍してください。
+
 C:\Users\(自分のコンピューター名)\AppData\Roaming\Blender Foundation\Blender\2.90\scripts\addons
+
 または、編集→Preferences→addonにZIPを解答せずに読み込み。
 
 
