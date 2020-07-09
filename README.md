@@ -2,6 +2,7 @@
 Softimage to Blender addon
 
 VSCodeからのアップ
+GIT上でファイルの変更
 
 Softimageユーザー向けのBlender用アドオンを公開しています。
 
