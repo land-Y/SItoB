@@ -4,7 +4,9 @@ D   ="DISABLE"
 E   ="ENABLE"
 T   ="TOGGLE"
 S1  ="builtin.select"
-#背面選択アドオン必須。なければデフォルトの物を選択ってやりたいけど未対応
+#背面選択アドオン「Box Select X-Ray」必須。
+#https://blenderartists.org/t/box-select-x-ray/1212316
+#なければデフォルトの物を選択ってやりたいけど未対応
 S2  ="mesh_tool.select_box_xray"
 S3  ="builtin.select_box"
 
