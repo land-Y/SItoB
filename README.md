@@ -1,4 +1,5 @@
 # SItoB
+GITHUBの使い方を勉強中。
 Softimage to Blender addon
 
 
