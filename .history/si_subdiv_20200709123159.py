@@ -1,7 +1,6 @@
 import bpy
 
 
-
 #法線をアクティブにする、既にチェック済み場合は無視。
 def oSm(b):
     for o in bpy.context.selected_objects:
