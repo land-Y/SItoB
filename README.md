@@ -1,6 +1,7 @@
 # SItoB
 Softimage to Blender addon
 
+VSCodeからのアップ
 
 Softimageユーザー向けのBlender用アドオンを公開しています。
 
