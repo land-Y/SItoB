@@ -2,7 +2,7 @@ import bpy
 
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
-def si_resetSRT(oDelta):
+def si_ResetSRT(oDelta):
     for i in bpy.context.selected_objects:
 
         i.location[0] = 0
@@ -41,7 +41,7 @@ def si_resetSRT(oDelta):
         
 
 
-class si_resetSRT_OT_object(bpy.types.Operator):
+class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_idname = "object.si_resetsrt"
     bl_label = "Reset All Transform and Delta"
     bl_description = "Reset All Transform and Delta"
@@ -49,5 +49,5 @@ class si_resetSRT_OT_object(bpy.types.Operator):
 
 
     def execute(self, context,):
-        si_resetSRT(1)
+        si_ResetSRT(1)
         return {'FINISHED'}

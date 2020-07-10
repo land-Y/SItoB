@@ -13,15 +13,17 @@ bl_info = {
 
 #複数ファイルに分割した場合必要
 if "bpy" in locals():
-    import imp
-    imp.reload(si_subdiv)
-    imp.reload(si_resetSRT)
-    imp.reload(si_MoveComponent)
+	import imp
+	imp.reload(si_Subdiv)
+	imp.reload(si_ResetSRT)
+	imp.reload(si_MoveComponent)
+	imp.reload(si_ResetCamera)
 
 else:
-    from . import si_subdiv
-    from . import si_resetSRT
-    from . import si_MoveComponent
+	from . import si_Subdiv
+	from . import si_ResetSRT
+	from . import si_MoveComponent
+	from . import si_ResetCamera
 
 
 import bpy
@@ -29,7 +31,7 @@ from bpy.props import *
 from bpy.types import  AddonPreferences
 import rna_keymap_ui 
 import os, csv, codecs
-
+from mathutils import Matrix, Vector
 
 
 
@@ -159,10 +161,16 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.si_minus_sudiv', 'NUMPAD_MINUS', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
+		#si_ResetCamera
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('view3d.si_reset_camera', 'R', 'PRESS')
+		keymap_Softimage.append((km, kmi))
+
         #si_ResetSRT
 		km = wm.keyconfigs.addon.keymaps.new(name = 'Animation')
 		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS',ctrl = True ,shift = True )
 		keymap_Softimage.append((km, kmi))
+
 
         #si_movecomponent
 		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
@@ -201,12 +209,13 @@ def remove_hotkey():
 #読み込んだファイルからクラスを読み込み
 classes = (
 SIKEYMAP_MT_AddonPreferences,
-si_subdiv.si_del_subdiv_OT_object,
-si_subdiv.si_add_subdiv_OT_object,
-si_subdiv.si_minus_subdiv_OT_object,
+si_Subdiv.si_del_subdiv_OT_object,
+si_Subdiv.si_add_subdiv_OT_object,
+si_Subdiv.si_minus_subdiv_OT_object,
 
-si_resetSRT.si_resetSRT_OT_object,
+si_ResetSRT.si_ResetSRT_OT_object,
 
+si_ResetCamera.si_ResetCamera_OT_object,
 
 si_MoveComponent.si_MoveComponent_OT_object,
 si_MoveComponent.si_MoveComponent1_OT_object,
