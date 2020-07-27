@@ -1,5 +1,5 @@
 import bpy
-
+from bpy.props import BoolProperty
 
 
 #法線をアクティブにする、既にチェック済み場合は無視。
@@ -22,7 +22,6 @@ def si_active_normal():
 
 
 
-
 #サブディビジョンモデファイア削除、法線設定もデフォルトに戻す
 def oDeln():
     for o in bpy.context.selected_objects:
@@ -30,6 +29,7 @@ def oDeln():
             bpy.ops.object.shade_flat()
             o.data.use_auto_smooth = False
             o.data.auto_smooth_angle = 0.523599
+
 def si_noactive_normal():
     oCM = bpy.context.object.mode
     if oCM == 'OBJECT':
@@ -109,9 +109,16 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
     bl_description = "Subdivisions like Softimage"
     bl_options = {'REGISTER', 'UNDO'} 
 
+    #モデファイアを最後に移動するオプション
+    si_moveindex = BoolProperty(default=True, name = "Move Modifire", description = "Move Modifire")
+
     def execute(self,context):
         si_active_normal()
         xsisubdiv(1,1)
+        
+        if self.si_moveindex:
+            bpy.ops.object.modifier_move_to_index(modifier="SI_subdiv", index=1)
+
         return {'FINISHED'}
 
 class si_minus_subdiv_OT_object(bpy.types.Operator):

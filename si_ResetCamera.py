@@ -1,5 +1,6 @@
 import bpy
 from mathutils import Matrix, Vector
+from bpy.props import BoolProperty
 
 class si_ResetCamera_OT_object(bpy.types.Operator):
     bl_idname = "view3d.si_reset_camera"
@@ -19,4 +20,6 @@ class si_ResetCamera_OT_object(bpy.types.Operator):
         area = bpy.context.space_data.region_3d
         area.view_distance = 15
         area.view_matrix = view_matrix
+
+
         return {'FINISHED'}

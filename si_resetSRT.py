@@ -1,4 +1,5 @@
 import bpy
+from bpy.props import BoolProperty
 
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
@@ -38,7 +39,7 @@ def si_ResetSRT(oDelta):
             i.scale[0] = 1
             i.scale[1] = 1
             i.scale[2] = 1
-        
+
 
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
@@ -47,7 +48,13 @@ class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_description = "Reset All Transform and Delta"
     bl_options = {'REGISTER', 'UNDO'} 
 
+    si_bool = BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
 
     def execute(self, context,):
-        si_ResetSRT(1)
+        
+        if self.si_bool:
+            si_ResetSRT(1)
+        else:
+            si_ResetSRT(0)
+
         return {'FINISHED'}
