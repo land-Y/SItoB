@@ -16,7 +16,7 @@ class si_ResetCamera_OT_object(bpy.types.Operator):
                             [0.0, -1.0,  0.25, -15.0],
                             [0.0,  0.0,  0.0,   1.0],
                             ])
-
+        #ショートカットに割り当てないとビューポート認知されない
         area = bpy.context.space_data.region_3d
         area.view_distance = 15
         area.view_matrix = view_matrix

@@ -18,12 +18,13 @@ if "bpy" in locals():
 	imp.reload(si_ResetSRT)
 	imp.reload(si_MoveComponent)
 	imp.reload(si_ResetCamera)
-
+	imp.reload(Tgl_HideObjectType)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
 	from . import si_MoveComponent
 	from . import si_ResetCamera
+	from . import Tgl_HideObjectType
 
 
 import bpy
@@ -193,10 +194,18 @@ def add_hotkey():
 		keymap_Softimage.append((km, kmi))
 
 
-		#-----------自作ツール以外のアドオンやハック系などなど
+
+
+
+		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
 		#OtherTools
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new("outliner.si_toggle_hide", 'H', 'PRESS')
+		keymap_OtherTools.append((km, kmi))
+
+		#tgl_hide_object_type オブジェクトビュータイプの表示トグル
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('view3d.tgl_hide_object_type', 'Q', 'PRESS',ctrl = True )
 		keymap_OtherTools.append((km, kmi))
 
 
@@ -222,6 +231,7 @@ si_MoveComponent.si_MoveComponent1_OT_object,
 si_MoveComponent.si_MoveComponent2_OT_object,
 si_MoveComponent.si_MoveComponent3_OT_object,
 
+Tgl_HideObjectType.Tgl_HideObjectType,
 
 )
 
