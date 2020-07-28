@@ -4,7 +4,7 @@ bl_info = {
   "version": (1, 0, 0),
   "blender": (2, 80, 0),
   "location": "Softimage SHORTCUT",
-  "support": "TESTING",
+  "support": "COMMUNITY",
   "category": "UI",
   "warning" : "",
   "wiki_url": "https://github.com/land-Y/SItoB/wiki",
@@ -19,13 +19,14 @@ if "bpy" in locals():
 	imp.reload(si_MoveComponent)
 	imp.reload(si_ResetCamera)
 	imp.reload(Tgl_HideObjectType)
+	imp.reload(si_Isolate)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
 	from . import si_MoveComponent
 	from . import si_ResetCamera
 	from . import Tgl_HideObjectType
-
+	from . import si_Isolate
 
 import bpy
 from bpy.props import *
@@ -167,6 +168,11 @@ def add_hotkey():
 		kmi = km.keymap_items.new('view3d.si_reset_camera', 'R', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
+		#si_isolate
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('view3d.si_isolate', 'INSERT', 'PRESS')
+		keymap_Softimage.append((km, kmi))
+
         #si_ResetSRT
 		km = wm.keyconfigs.addon.keymaps.new(name = 'Animation')
 		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS',ctrl = True ,shift = True )
@@ -230,8 +236,9 @@ si_MoveComponent.si_MoveComponent_OT_object,
 si_MoveComponent.si_MoveComponent1_OT_object,
 si_MoveComponent.si_MoveComponent2_OT_object,
 si_MoveComponent.si_MoveComponent3_OT_object,
+si_Isolate.si_isolate_OT_object,
 
-Tgl_HideObjectType.Tgl_HideObjectType,
+Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
 
 )
 

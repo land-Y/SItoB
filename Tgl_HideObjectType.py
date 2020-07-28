@@ -44,7 +44,7 @@ def Tgl_DisplayObjTyp():
     area.show_object_viewport_speaker = True
 
               
-class Tgl_HideObjectType(bpy.types.Operator):
+class Tgl_HideObjectType_OT_object(bpy.types.Operator):
     bl_idname = "view3d.tgl_hide_object_type"
     bl_label = "Toggle Hide Object Type"
  
