@@ -21,8 +21,8 @@ def set_active_tool(tool_name):
 
 
 def si_MoveComponent(a,b,c,d):    
-    #SI MoveComponent mode
-    bpy.ops.object.mode_set(mode='EDIT',toggle=False)
+    mode = bpy.context.active_object.mode
+    bpy.ops.object.mode_set(mode='EDIT')
     set_active_tool(d)
     bpy.ops.mesh.select_mode(use_extend=True ,type="VERT",action= a )
     bpy.ops.mesh.select_mode(use_extend=True ,type="EDGE",action= b )
@@ -68,3 +68,5 @@ class si_MoveComponent3_OT_object(bpy.types.Operator):
     def execute(self, context,):
         si_MoveComponent(D,D,E,S2)
         return {'FINISHED'}
+
+

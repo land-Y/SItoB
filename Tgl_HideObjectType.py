@@ -15,7 +15,7 @@ def Tgl_HideObjTyp():
     #area.show_object_viewport_grease_pencil = not area.show_object_viewport_grease_pencil
     area.show_object_viewport_armature = not area.show_object_viewport_armature
     #area.show_object_viewport_lattice = not area.show_object_viewport_lattice
-    area.show_object_viewport_empty = not area.show_object_viewport_empty
+    #area.show_object_viewport_empty = not area.show_object_viewport_empty
     area.show_object_viewport_light = not area.show_object_viewport_light
     area.show_object_viewport_light_probe = not area.show_object_viewport_light_probe
     area.show_object_viewport_camera = not area.show_object_viewport_camera
