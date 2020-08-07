@@ -27,11 +27,10 @@ def dontmovecam():
     bpy.ops.view3d.localview()
     rg3d.view_distance = vDis
     rg3d.view_matrix = vMrx
-    
-    bpy.ops.object.select_all(action='DESELECT')
-    for o in oObj:
+
+    for o in oLit:
         obj = bpy.context.scene.objects.get(o.name)
-        if obj: obj.select_set(True)
+        if obj: obj.select_set(False)
 
 
 class si_isolate_OT_object(bpy.types.Operator):
