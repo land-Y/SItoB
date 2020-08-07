@@ -7,7 +7,6 @@ def Tgl_HideOverray():
     ovl = bpy.context.space_data.overlay
     ovl.show_extras = not ovl.show_extras
     ovl.show_relationship_lines = not ovl.show_relationship_lines
-    ovl.show_outline_selected = not ovl.show_outline_selected
     ovl.show_object_origins = not ovl.show_object_origins
     ovl.show_motion_paths = not ovl.show_motion_paths
     ovl.show_bones = not ovl.show_bones
@@ -19,7 +18,6 @@ def All_HideOverray():
     ovl = bpy.context.space_data.overlay
     ovl.show_extras = False
     ovl.show_relationship_lines = False
-    ovl.show_outline_selected = False
     ovl.show_object_origins_all = False
     ovl.show_object_origins = False
     ovl.show_motion_paths = False
