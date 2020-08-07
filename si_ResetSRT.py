@@ -40,7 +40,10 @@ def si_ResetSRT(oDelta):
             i.scale[1] = 1
             i.scale[2] = 1
 
-
+        #もしモードがPOSEならトランスフォームすべてクリア
+        oMode = bpy.context.object.mode
+        if oMode == "POSE":
+            bpy.ops.pose.transforms_clear()
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_idname = "object.si_resetsrt"
