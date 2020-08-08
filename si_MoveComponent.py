@@ -22,23 +22,24 @@ def set_active_tool(tool_name):
 def si_MoveComponent(a,b,c,d):
     oSel = bpy.context.selected_objects
     for o in oSel:
-        print(o.type)
         if o.type == "MESH":
             bpy.ops.object.mode_set(mode='EDIT')
             bpy.context.tool_settings.mesh_select_mode = (a,b,c)
             set_active_tool(d)
-            
-        elif o.type == "CURVE" or "SURFACE":
+        elif o.type == "CURVE":
             bpy.ops.object.mode_set(mode='EDIT')
             set_active_tool(S4)
-        
+        elif o.type == "SURFACE":
+            bpy.ops.object.mode_set(mode='EDIT')
+            set_active_tool(S4)
+            
         #アーマチュアやカーブなど、オブジェクトモードなら編集に入るが
         #POSEモードなら何もしない。
-        elif bpy.context.mode == "POSE":
-            print("None")
-        
-        else:
-            bpy.ops.object.mode_set(mode='EDIT')
+        elif o.type == "ARMATURE":
+            if bpy.context.mode == "POSE":
+                print("Pose now")
+            else:
+                bpy.ops.object.mode_set(mode='EDIT')
 
 
 class si_MoveComponent_OT_object(bpy.types.Operator):

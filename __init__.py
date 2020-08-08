@@ -180,17 +180,17 @@ def add_hotkey():
 
 
         #si_movecomponent
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_movecomponent', 'M', 'PRESS' )
 		keymap_Softimage.append((km, kmi))
 
 		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_movecomponent1', 'T', 'ANY' )
 		keymap_Softimage.append((km, kmi))
 
 		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_movecomponent2', 'E', 'ANY' )
 		keymap_Softimage.append((km, kmi))
 
