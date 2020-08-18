@@ -17,7 +17,6 @@ def set_active_tool(tool_name):
             bpy.ops.wm.tool_set_by_id(override, name=tool_name)
 
 
-
 #選択オブジェクトの属性やモードによって選択を切り替える
 def si_MoveComponent(a,b,c,d):
     oSel = bpy.context.selected_objects

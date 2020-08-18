@@ -20,6 +20,7 @@ if "bpy" in locals():
 	imp.reload(si_ResetCamera)
 	imp.reload(Tgl_HideObjectType)
 	imp.reload(si_Isolate)
+	imp.reload(SeparateComponet_keep)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -27,6 +28,7 @@ else:
 	from . import si_ResetCamera
 	from . import Tgl_HideObjectType
 	from . import si_Isolate
+	from . import SeparateComponet_keep
 
 import bpy
 from bpy.props import *
@@ -54,6 +56,8 @@ def GetTranslationDict():
                     dict['ja_JP'][(context, row[1].replace('\\n', '\n'))] = row[0].replace('\\n', '\n') 
     return dict
 #-------------------------------------------------------------------
+
+
 
 
 # メニューを構築する関数
@@ -195,11 +199,15 @@ def add_hotkey():
 		keymap_Softimage.append((km, kmi))
 
 		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_movecomponent3', 'U', 'ANY' )
 		keymap_Softimage.append((km, kmi))
 
 
+		#si_Active componetnt Vertex Edge Face
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('object.si_movecomponent3', 'U', 'ANY' )
+		keymap_Softimage.append((km, kmi))
 
 
 
@@ -209,9 +217,13 @@ def add_hotkey():
 		kmi = km.keymap_items.new("outliner.si_toggle_hide", 'H', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new("view3d.tgl_hide_object_type", 'Q', 'PRESS',ctrl = True)
+		keymap_OtherTools.append((km, kmi))
+
 		#tgl_hide_object_type オブジェクトビュータイプの表示トグル
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('view3d.tgl_hide_object_type', 'Q', 'PRESS',ctrl = True )
+		kmi = km.keymap_items.new('object.separatecomponet_keep', 'D', 'PRESS',ctrl = True ,alt = True )
 		keymap_OtherTools.append((km, kmi))
 
 
@@ -240,12 +252,15 @@ si_Isolate.si_isolate_OT_object,
 
 Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
 
+SeparateComponet_keep.SeparateComponent_OT_object
 )
+
 
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
 	add_hotkey()
+	
 
 	#辞書登録
 	translation_dict = GetTranslationDict()
