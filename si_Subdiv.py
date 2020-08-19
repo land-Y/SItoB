@@ -2,6 +2,7 @@ import bpy
 from bpy.props import BoolProperty
 
 
+
 #法線をアクティブにする、既にチェック済み場合は無視。
 def oSm(b):
     for o in bpy.context.selected_objects:
@@ -10,6 +11,9 @@ def oSm(b):
             if o.data.use_auto_smooth == False:
                 o.data.use_auto_smooth = True
                 o.data.auto_smooth_angle = b
+        elif o.type == 'CURVE':
+            o.data.splines[0].use_smooth = True
+
 
 def si_active_normal():
     oCM = bpy.context.object.mode
@@ -29,6 +33,8 @@ def oDeln():
             bpy.ops.object.shade_flat()
             o.data.use_auto_smooth = False
             o.data.auto_smooth_angle = 0.523599
+        elif o.type == 'CURVE':
+            o.data.splines[0].use_smooth = False
 
 def si_noactive_normal():
     oCM = bpy.context.object.mode
@@ -64,7 +70,7 @@ def xsisubdiv(oL,oAdd):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
     for o in bpy.context.selected_objects:
         #メッシュか判定
-        if o.type == 'MESH':
+        if o.type == 'MESH' or 'CURVE':
             #名称規則でSI_subdivが存在しなければ新規でモデファイア生成
             if o.modifiers.get("SI_subdiv") == None:
                 #すでに知らん名前のサブディビモデファイアがあれば全てさよならグッバイ
