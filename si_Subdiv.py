@@ -65,6 +65,11 @@ def delete_subdiv():
         oDel()
         bpy.ops.object.mode_set ( mode = oCM )
 
+def GetModifires():
+    for i in bpy.context.selected_objects:
+        #モディファイアの適応数
+        num = len(i.modifiers)
+        return num
 
 def xsisubdiv(oL,oAdd):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
@@ -123,8 +128,11 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
         xsisubdiv(1,1)
         
         if self.si_moveindex:
-            bpy.ops.object.modifier_move_down(modifier="SI_subdiv")
+            #選択オブジェクトからモデファイア数を戻す
+            num = GetModifires()
+            bpy.ops.object.modifier_move_to_index(modifier="SI_subdiv",index= num - 1)
         return {'FINISHED'}
+
 
 class si_minus_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_minus_sudiv"
