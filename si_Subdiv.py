@@ -123,8 +123,7 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
         xsisubdiv(1,1)
         
         if self.si_moveindex:
-            bpy.ops.object.modifier_move_to_index(modifier="SI_subdiv", index=1)
-
+            bpy.ops.object.modifier_move_down(modifier="SI_subdiv")
         return {'FINISHED'}
 
 class si_minus_subdiv_OT_object(bpy.types.Operator):
