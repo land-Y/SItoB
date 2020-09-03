@@ -21,6 +21,7 @@ if "bpy" in locals():
 	imp.reload(Tgl_HideObjectType)
 	imp.reload(si_Isolate)
 	imp.reload(SeparateComponet_keep)
+	imp.reload(si_ToggleHide)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -29,6 +30,7 @@ else:
 	from . import Tgl_HideObjectType
 	from . import si_Isolate
 	from . import SeparateComponet_keep
+	from . import si_ToggleHide
 
 import bpy
 from bpy.props import *
@@ -204,18 +206,14 @@ def add_hotkey():
 		keymap_Softimage.append((km, kmi))
 
 
-		#si_Active componetnt Vertex Edge Face
+		#si_toggle_hide
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_movecomponent3', 'U', 'ANY' )
+		kmi = km.keymap_items.new('outliner.si_toggle_hide', 'H', 'PRESS' )
 		keymap_Softimage.append((km, kmi))
-
 
 
 		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
 		#OtherTools
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new("outliner.si_toggle_hide", 'H', 'PRESS')
-		keymap_OtherTools.append((km, kmi))
 
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new("view3d.tgl_hide_object_type", 'Q', 'PRESS',ctrl = True)
@@ -249,6 +247,7 @@ si_MoveComponent.si_MoveComponent1_OT_object,
 si_MoveComponent.si_MoveComponent2_OT_object,
 si_MoveComponent.si_MoveComponent3_OT_object,
 si_Isolate.si_isolate_OT_object,
+si_ToggleHide.OUTLINER_OT_si_toggle_hide,
 
 Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
 
