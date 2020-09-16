@@ -3,16 +3,17 @@ import bpy
 
 #ライトと選択中オブジェクトの合体。名前だけ抽出
 def dontmovecam():
-    oLit = bpy.data.lights
+
+    oLit = list()
     oObj = bpy.context.selected_objects
     oCol = list()
 
-    for o in oLit:
-        oCol.append(o.name)
+    for o in bpy.context.scene.objects:
+        if o.type== "LIGHT":
+            oLit.append(o.name)
+            oCol.append(o.name)
     for o in oObj:
         oCol.append(o.name)
-        
-
     for o in oCol:
         obj = bpy.context.scene.objects.get(o)
         if obj: obj.select_set(True)
@@ -29,7 +30,7 @@ def dontmovecam():
     rg3d.view_matrix = vMrx
 
     for o in oLit:
-        obj = bpy.context.scene.objects.get(o.name)
+        obj = bpy.context.scene.objects.get(o)
         if obj: obj.select_set(False)
 
 
