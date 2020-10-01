@@ -31,7 +31,7 @@ def si_MoveComponent(a,b,c,d):
         elif o.type == "SURFACE":
             bpy.ops.object.mode_set(mode='EDIT')
             set_active_tool(S4)
-            
+
         #アーマチュアやカーブなど、オブジェクトモードなら編集に入るが
         #POSEモードなら何もしない。
         elif o.type == "ARMATURE":

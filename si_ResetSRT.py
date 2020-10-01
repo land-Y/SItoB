@@ -45,6 +45,17 @@ def si_ResetSRT(oDelta):
         if oMode == "POSE":
             bpy.ops.pose.transforms_clear()
 
+        #もしモードがEDITでアーマチュアならボーンの初期化
+        if oMode == "EDIT":
+            print("edit mode now")
+            for i in bpy.data.armatures:
+                for b in i.edit_bones:
+                    if b.select_head:
+                        b.head = 0,0,0
+                        b.roll = 0
+                    if b.select_tail:
+                        b.tail = 0,0,1
+
 class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_idname = "object.si_resetsrt"
     bl_label = "Reset All Transform and Delta"
