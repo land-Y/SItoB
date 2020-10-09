@@ -10,8 +10,8 @@ def knife_project(o):
     if len(oSel) != 2:
         print("Please Selecting ProjectionMesh and MeshObject")
     else:
-        bpy.context.mode != 'EDIT'
-        bpy.ops.object.mode_set(mode='EDIT')
+        if bpy.context.mode != 'EDIT':
+            bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.knife_project(cut_through= o )
 
 class KnifeProject_OT_object_cut_through(bpy.types.Operator):
