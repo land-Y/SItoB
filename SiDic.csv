@@ -15,3 +15,6 @@
 "選択の孤立","Isolate Selected"
 "分離（コンポーネント維持)","Separate Componet keep"
 "表示のトグル","si Toggle Hide"
+
+"プロジェクション用のメッシュを選択してメッシュオブジェクトを選択","Please Selecting ProjectionMesh and MeshObject"
+"ナイフ投影（背面を含める）","Knife Project cut through"

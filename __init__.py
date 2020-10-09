@@ -22,6 +22,7 @@ if "bpy" in locals():
 	imp.reload(si_Isolate)
 	imp.reload(SeparateComponet_keep)
 	imp.reload(si_ToggleHide)
+	imp.reload(KnifeProject)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -31,7 +32,9 @@ else:
 	from . import si_Isolate
 	from . import SeparateComponet_keep
 	from . import si_ToggleHide
+	from . import KnifeProject
 
+	
 import bpy
 from bpy.props import *
 from bpy.types import  AddonPreferences
@@ -224,6 +227,11 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.separatecomponet_keep', 'D', 'PRESS',ctrl = True ,alt = True )
 		keymap_OtherTools.append((km, kmi))
 
+		#エディット以外でもナイフプロジェクト カットスルー
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS',ctrl = True ,alt = True )
+		keymap_OtherTools.append((km, kmi))
+
 
 def remove_hotkey():
 	for km, kmi in keymap_Softimage:
@@ -250,6 +258,9 @@ si_Isolate.si_isolate_OT_object,
 si_ToggleHide.OUTLINER_OT_si_toggle_hide,
 
 Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
+
+KnifeProject.KnifeProject_OT_object_cut_through,
+KnifeProject.KnifeProject_OT_object,
 
 SeparateComponet_keep.SeparateComponent_OT_object
 )
