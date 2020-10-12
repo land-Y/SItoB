@@ -261,6 +261,7 @@ Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
 
 KnifeProject.KnifeProject_OT_object_cut_through,
 KnifeProject.KnifeProject_OT_object,
+KnifeProject.KnifeProject_OT_CreateSeam_SelFaceBorder,
 
 SeparateComponet_keep.SeparateComponent_OT_object
 )

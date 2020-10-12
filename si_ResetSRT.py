@@ -1,6 +1,33 @@
 import bpy
 from bpy.props import BoolProperty
 
+#アーマチュアのエディット中ボーンの位置をリセット
+#ロールもリセットするがどのような影響がでるか未検証
+def ResetBone(oAdd):
+    for a in bpy.data.armatures:
+        for b in a.edit_bones:
+            if b.select_tail:
+                if b.parent == None:
+                    b.tail =oAdd
+                    b.roll = 0
+                else:
+                    c  = b.parent.tail 
+                    d = oAdd
+                    e = list(map(lambda x,y:x+y,c,d))
+                    b.tail = e
+                    b.roll = 0
+            if b.select_head:
+                if b.parent == None:
+                    b.head =[0,0,0]
+                    b.roll = 0
+                else:
+                    c  = b.parent.head 
+                    d = oAdd
+                    e = list(map(lambda x,y:x+y,c,d))
+                    b.head = e
+                    b.roll = 0
+
+
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
 def si_ResetSRT(oDelta):
@@ -47,14 +74,9 @@ def si_ResetSRT(oDelta):
 
         #もしモードがEDITでアーマチュアならボーンの初期化
         if oMode == "EDIT":
-            print("edit mode now")
-            for i in bpy.data.armatures:
-                for b in i.edit_bones:
-                    if b.select_head:
-                        b.head = 0,0,0
-                        b.roll = 0
-                    if b.select_tail:
-                        b.tail = 0,0,1
+            ResetBone([0,0,1])
+
+
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_idname = "object.si_resetsrt"

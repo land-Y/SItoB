@@ -18,3 +18,4 @@
 
 "プロジェクション用のメッシュを選択してメッシュオブジェクトを選択","Please Selecting ProjectionMesh and MeshObject"
 "ナイフ投影（背面を含める）","Knife Project cut through"
+"フェースの境界にシーム","CreateSeam Border of faces"
