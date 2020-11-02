@@ -183,7 +183,7 @@ def add_hotkey():
 		keymap_Softimage.append((km, kmi))
 
         #si_ResetSRT
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Animation')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS',ctrl = True ,shift = True )
 		keymap_Softimage.append((km, kmi))
 
