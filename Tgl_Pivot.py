@@ -20,7 +20,7 @@ class tglPivot_OT_object(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'} 
 
     bSnap = BoolProperty(default=True, name = "start Snap", description = "Corser Active Snap")
-    eSnap = BoolProperty(default=True, name = "end Snap", description = "Finish Active Snap")
+    eSnap = BoolProperty(default=False, name = "end Snap", description = "Finish Active Snap")
 
     def execute(self, context,):
 

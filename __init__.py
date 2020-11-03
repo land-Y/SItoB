@@ -23,6 +23,7 @@ if "bpy" in locals():
 	imp.reload(SeparateComponet_keep)
 	imp.reload(si_ToggleHide)
 	imp.reload(KnifeProject)
+	imp.reload(Tgl_Pivot)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -33,6 +34,7 @@ else:
 	from . import SeparateComponet_keep
 	from . import si_ToggleHide
 	from . import KnifeProject
+	from . import Tgl_Pivot
 
 	
 import bpy
@@ -232,6 +234,11 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS',ctrl = True ,alt = True )
 		keymap_OtherTools.append((km, kmi))
 
+		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
+		keymap_OtherTools.append((km, kmi))
+
 
 def remove_hotkey():
 	for km, kmi in keymap_Softimage:
@@ -263,7 +270,9 @@ KnifeProject.KnifeProject_OT_object_cut_through,
 KnifeProject.KnifeProject_OT_object,
 KnifeProject.KnifeProject_OT_CreateSeam_SelFaceBorder,
 
-SeparateComponet_keep.SeparateComponent_OT_object
+SeparateComponet_keep.SeparateComponent_OT_object,
+
+Tgl_Pivot.tglPivot_OT_object
 )
 
 

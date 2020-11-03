@@ -1,8 +1,10 @@
 import bpy
 from bpy.props import BoolProperty
 
+
 #アーマチュアのエディット中ボーンの位置をリセット
 #ロールもリセットするがどのような影響がでるか未検証
+
 def ResetBone(oAdd):
     for a in bpy.data.armatures:
         for b in a.edit_bones:
