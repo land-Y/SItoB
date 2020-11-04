@@ -235,7 +235,7 @@ def add_hotkey():
 		keymap_OtherTools.append((km, kmi))
 
 		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
 		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 
