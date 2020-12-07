@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty , IntProperty
 
 
 #アーマチュアのエディット中ボーンの位置をリセット
@@ -32,7 +32,7 @@ def ResetBone(oAdd):
 
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
-def si_ResetSRT(oDelta):
+def si_ResetSRT(oDelta,oVector):
     for i in bpy.context.selected_objects:
 
         i.location[0] = 0
@@ -76,8 +76,17 @@ def si_ResetSRT(oDelta):
 
         #もしモードがEDITでアーマチュアならボーンの初期化
         if oMode == "EDIT":
-            ResetBone([0,0,1])
+            ResetBone(oVector)
 
+def init_props():
+    scene = bpy.types.Scene
+    scene.y = IntProperty(
+        name="Y",
+        description="Y",
+        default=0,
+        min=-10,
+        max=10
+    )
 
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
@@ -87,12 +96,12 @@ class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'} 
 
     si_bool = BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
-
+    si_INT = IntProperty(default=0, name = "Bone Tail Y", description = "Bone Tail Y")
     def execute(self, context,):
         
         if self.si_bool:
-            si_ResetSRT(1)
+            si_ResetSRT(1,si_INT)
         else:
-            si_ResetSRT(0)
+            si_ResetSRT(0,si_INT)
 
         return {'FINISHED'}
