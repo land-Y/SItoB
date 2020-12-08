@@ -24,6 +24,7 @@ if "bpy" in locals():
 	imp.reload(si_ToggleHide)
 	imp.reload(KnifeProject)
 	imp.reload(Tgl_Pivot)
+	imp.reload(clipbord_SelectObjectName)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -35,6 +36,7 @@ else:
 	from . import si_ToggleHide
 	from . import KnifeProject
 	from . import Tgl_Pivot
+	from . import clipbord_SelectObjectName
 
 	
 import bpy
@@ -239,6 +241,10 @@ def add_hotkey():
 		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 
+		#選択ボーンの名前をクリップボードにコピー。又はオブジェクト名
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('view3d.clipbord_select_object', 'C', 'PRESS',ctrl = True ,shift = True)
+		keymap_OtherTools.append((km, kmi))
 
 def remove_hotkey():
 	for km, kmi in keymap_Softimage:
@@ -272,7 +278,8 @@ KnifeProject.KnifeProject_OT_CreateSeam_SelFaceBorder,
 
 SeparateComponet_keep.SeparateComponent_OT_object,
 
-Tgl_Pivot.tglPivot_OT_object
+Tgl_Pivot.tglPivot_OT_object,
+clipbord_SelectObjectName.clipbord_select_object_OT_object
 )
 
 
