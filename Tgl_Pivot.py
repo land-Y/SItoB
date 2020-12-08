@@ -44,20 +44,6 @@ class tglPivot_OT_object(bpy.types.Operator):
     oShow = BoolProperty(default=True, name = "Show Cursor", description = "Show cursor")
     def execute(self, context,):
 
-        if self.bSnap:
-            oStartSnap = True
-        else:
-            oStartSnap = False
-
-        if self.eSnap:
-            oEndSnap = True
-        else:
-            oEndSnap = False
-
-        if self.oShow:
-            oShowCursor = True
-        else:
-            oShowCursor = False
-        TglCursor(oStartSnap,oEndSnap,oShowCursor)
+        TglCursor(self.bSnap,self.eSnap,self.oShow)
 
         return {'FINISHED'}

@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty , FloatVectorProperty
 
 
 #アーマチュアのエディット中ボーンの位置をリセット
@@ -10,20 +10,26 @@ def ResetBone(oAdd):
         for b in a.edit_bones:
             if b.select_tail:
                 if b.parent == None:
-                    b.tail =oAdd
+                    c  = b.head
+                    d = oAdd
+                    e = list(map(lambda x,y:x+y,c,d))
                     b.roll = 0
+                    b.tail = e
+
                 else:
-                    c  = b.parent.tail 
+                    c  = b.head
                     d = oAdd
                     e = list(map(lambda x,y:x+y,c,d))
                     b.tail = e
                     b.roll = 0
+
             if b.select_head:
                 if b.parent == None:
-                    b.head =[0,0,0]
+                    b.head = [0,0,0]
                     b.roll = 0
+
                 else:
-                    c  = b.parent.head 
+                    c  = b.parent.tail 
                     d = oAdd
                     e = list(map(lambda x,y:x+y,c,d))
                     b.head = e
@@ -32,7 +38,7 @@ def ResetBone(oAdd):
 
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
-def si_ResetSRT(oDelta):
+def si_ResetSRT(oDelta,oVector):
     for i in bpy.context.selected_objects:
 
         i.location[0] = 0
@@ -76,8 +82,7 @@ def si_ResetSRT(oDelta):
 
         #もしモードがEDITでアーマチュアならボーンの初期化
         if oMode == "EDIT":
-            ResetBone([0,0,1])
-
+            ResetBone(oVector)
 
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
@@ -86,13 +91,14 @@ class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_description = "Reset All Transform and Delta"
     bl_options = {'REGISTER', 'UNDO'} 
 
-    si_bool = BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
-
+    si_bool : BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
+    si_VEC : FloatVectorProperty(subtype='TRANSLATION',default=(0.0, 0.0, 0.0), name = "Offset(BoneOnly)")
+ 
     def execute(self, context,):
-        
-        if self.si_bool:
-            si_ResetSRT(1)
-        else:
-            si_ResetSRT(0)
+        oBool = self.si_bool
+        oVec = self.si_VEC
+
+        si_ResetSRT(oBool,oVec)
+
 
         return {'FINISHED'}
