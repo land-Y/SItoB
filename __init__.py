@@ -266,6 +266,11 @@ def add_hotkey():
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('armature.clearparentposemode', 'P', 'PRESS' ,shift= True)
 		keymap_RigTools.append((km, kmi))
+		#ボーンのデリートをPoseModeでも
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.deleteboneposemode', 'DEL', 'PRESS' ,ctrl= True,shift= True)
+		keymap_RigTools.append((km, kmi))
+
 
 		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
 		#OtherTools
@@ -337,7 +342,8 @@ Tgl_Pivot.tglPivot_OT_object,
 clipbord_SelectObjectName.clipbord_select_object_OT_object,
 RIG_BoneTools.MakeBone_OT_object,
 RIG_BoneTools.SetParent_OT_object,
-RIG_BoneTools.ClearParent_OT_object
+RIG_BoneTools.ClearParent_OT_object,
+RIG_BoneTools.DeleteBonePoseMode_OT_object
 )
 
 

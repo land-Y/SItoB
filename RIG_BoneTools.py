@@ -10,6 +10,7 @@ def menu_draw(self, context):
     self.layout.operator("armature.newbone_fromselect2bone")
     self.layout.operator("armature.setparentposemode")
     self.layout.operator("armature.clearparentposemode")
+    self.layout.operator("armature.deleteboneposemode")
 
 class si_BoneTools():
 
@@ -86,6 +87,12 @@ class si_BoneTools():
         bpy.ops.object.mode_set(mode=SaveMode)
 
 
+    def DeleteBonePoseMode(self):
+        SaveMode = self.ChangeEditMode()
+        bpy.ops.armature.delete()
+        bpy.ops.object.mode_set(mode=SaveMode)
+
+
 class MakeBone_OT_object(bpy.types.Operator):
     bl_idname = "armature.newbone_fromselect2bone"
     bl_label = "MakeBone can PoseMode"
@@ -124,4 +131,15 @@ class ClearParent_OT_object(bpy.types.Operator):
     def execute(self, context):
         Bone = si_BoneTools(bpy.context.active_bone)
         Bone.ClearParentPoseMode()
+        return {'FINISHED'}
+
+class DeleteBonePoseMode_OT_object(bpy.types.Operator):
+    bl_idname = "armature.deleteboneposemode"
+    bl_label = "DeleteBone can PoseMode"
+    bl_description = "DeleteBone can Pose&Object Mode"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        Bone = si_BoneTools(bpy.context.active_bone)
+        Bone.DeleteBonePoseMode()
         return {'FINISHED'}
