@@ -21,3 +21,7 @@
 "フェースの境界にシーム","CreateSeam Border of faces"
 "ピボットモードをトグル","toggle pivot mode"
 "選択ボーン名をクリップボードにコピー","clipbord select object"
+
+"選択した2つのボーンの間にボーン生成（POSE可）","clipbord select object"
+"最後に選択したボーンに親子付（POSE可）","clipbord select object"
+"ペアレントのクリア（POSE可）","clipbord select object"
