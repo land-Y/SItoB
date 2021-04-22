@@ -29,7 +29,7 @@ def ResetBone(oAdd):
                     b.roll = 0
 
                 else:
-                    c  = b.parent.tail 
+                    c  = b.parent.tail
                     d = oAdd
                     e = list(map(lambda x,y:x+y,c,d))
                     b.head = e
@@ -38,13 +38,13 @@ def ResetBone(oAdd):
 
 
 #SRTを初期値に戻す。回転はまだ何かリセットすべきものある？
-def si_ResetSRT(oDelta,oVector):
+def si_ResetSRT(oDelta,oVector,oAli):
     for i in bpy.context.selected_objects:
 
         i.location[0] = 0
         i.location[1] = 0
         i.location[2] = 0
-        
+
         i.rotation_euler[0] = 0
         i.rotation_euler[1] = 0
         i.rotation_euler[2] = 0
@@ -56,21 +56,21 @@ def si_ResetSRT(oDelta,oVector):
         i.rotation_axis_angle[1] = 0
         i.rotation_axis_angle[2] = 0
         i.rotation_axis_angle[3] = 0
-        
+
         i.scale[0] = 1
         i.scale[1] = 1
         i.scale[2] = 1
-        
+
         #reset delta
         if oDelta == 1:
             i.delta_location[0] = 0
             i.delta_location[1] = 0
             i.delta_location[2] = 0
-            
+
             i.delta_rotation_euler[0] = 0
             i.delta_rotation_euler[1] = 0
             i.delta_rotation_euler[2] = 0
-            
+
             i.scale[0] = 1
             i.scale[1] = 1
             i.scale[2] = 1
@@ -89,16 +89,18 @@ class si_ResetSRT_OT_object(bpy.types.Operator):
     bl_idname = "object.si_resetsrt"
     bl_label = "Reset All Transform and Delta"
     bl_description = "Reset All Transform and Delta"
-    bl_options = {'REGISTER', 'UNDO'} 
+    bl_options = {'REGISTER', 'UNDO'}
 
     si_bool : BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
     si_VEC : FloatVectorProperty(subtype='TRANSLATION',default=(0.0, 0.0, 0.0), name = "Offset(BoneOnly)")
- 
+    si_Aline : BoolProperty(default=True, name = "Aline Parent", description = "Aline Parent")
+
     def execute(self, context,):
         oBool = self.si_bool
         oVec = self.si_VEC
+        oAli = self.si_Aline
 
-        si_ResetSRT(oBool,oVec)
+        si_ResetSRT(oBool,oVec,oAli)
 
 
         return {'FINISHED'}

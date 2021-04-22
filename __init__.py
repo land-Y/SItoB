@@ -1,8 +1,8 @@
 bl_info = {
   "name": "softimage to Blender",
   "author": "cvELD",
-  "version": (1, 0, 0),
-  "blender": (2, 80, 0),
+  "version": (1, 1, 0),
+  "blender": (2, 92, 0),
   "location": "Softimage SHORTCUT",
   "support": "COMMUNITY",
   "category": "UI",
@@ -25,6 +25,8 @@ if "bpy" in locals():
 	imp.reload(KnifeProject)
 	imp.reload(Tgl_Pivot)
 	imp.reload(clipbord_SelectObjectName)
+	imp.reload(RIG_BoneTools)
+
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -37,12 +39,13 @@ else:
 	from . import KnifeProject
 	from . import Tgl_Pivot
 	from . import clipbord_SelectObjectName
+	from . import RIG_BoneTools
 
-	
+
 import bpy
 from bpy.props import *
 from bpy.types import  AddonPreferences
-import rna_keymap_ui 
+import rna_keymap_ui
 import os, csv, codecs
 from mathutils import Matrix, Vector
 
@@ -62,7 +65,7 @@ def GetTranslationDict():
             if row: # 行に内容がある場合のみ(空行を除外)
                 for context in bpy.app.translations.contexts:
                 # 辞書内の改行が勝手にエスケープされてしまうので、replace()で変換して、正しく読み込めるようにする
-                    dict['ja_JP'][(context, row[1].replace('\\n', '\n'))] = row[0].replace('\\n', '\n') 
+                    dict['ja_JP'][(context, row[1].replace('\\n', '\n'))] = row[0].replace('\\n', '\n')
     return dict
 #-------------------------------------------------------------------
 
@@ -73,7 +76,7 @@ def GetTranslationDict():
 
 class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 	bl_idname = __name__
-	tab_addon_menu : EnumProperty(name="Tab", description="", items=[('Keymap', "Softimage", "","KEYINGSET",0),('OtherTools', "OtherTools", "","KEYINGSET2",1), ('Link', "Link", "","URL",2)], default='Keymap')
+	tab_addon_menu : EnumProperty(name="Tab", description="", items=[('Keymap', "Softimage", "","KEYINGSET",0),('OtherTools', "OtherTools", "","KEYINGSET2",1), ('RigTools', "RigTools", "","KEYINGSET2",2),('Link', "Link", "","URL",3)], default='Keymap')
 
 
 	def draw(self, context):
@@ -94,8 +97,38 @@ class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 			wm = bpy.context.window_manager
 			kc = wm.keyconfigs.user
 			old_km_name = ""
-			old_id_l = [] 
+			old_id_l = []
 			for km_add, kmi_add in keymap_Softimage:
+				km = kc.keymaps[km_add.name]
+
+				for kmi_con in km.keymap_items:
+					if kmi_add.idname == kmi_con.idname:
+						if not kmi_con.id in old_id_l:
+							kmi = kmi_con
+							old_id_l.append(kmi_con.id)
+							break
+
+				if kmi:
+					if not km.name == old_km_name:
+						col.label(text=km.name,icon="DOT")
+					col.context_pointer_set("keymap", km)
+					rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
+					col.separator()
+					old_km_name = km.name
+					kmi = None
+
+		#RigTools Tab用
+		elif self.tab_addon_menu=="RigTools":
+			box = layout.box()
+			col = box.column()
+			col.label(text="Keymap List:",icon="KEYINGSET")
+
+
+			wm = bpy.context.window_manager
+			kc = wm.keyconfigs.user
+			old_km_name = ""
+			old_id_l = []
+			for km_add, kmi_add in keymap_RigTools:
 				km = kc.keymaps[km_add.name]
 
 				for kmi_con in km.keymap_items:
@@ -125,7 +158,7 @@ class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 			wm = bpy.context.window_manager
 			kc = wm.keyconfigs.user
 			old_km_name = ""
-			old_id_l = [] 
+			old_id_l = []
 			for km_add, kmi_add in keymap_OtherTools:
 				km = kc.keymaps[km_add.name]
 
@@ -152,6 +185,7 @@ class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 
 
 keymap_Softimage = []
+keymap_RigTools = []
 keymap_OtherTools = []
 
 
@@ -218,6 +252,20 @@ def add_hotkey():
 		kmi = km.keymap_items.new('outliner.si_toggle_hide', 'H', 'PRESS' )
 		keymap_Softimage.append((km, kmi))
 
+		#-----------Rigging用のツール
+
+		#ポーズボーン中でもペアレントできるようにする
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.newbone_fromselect2bone', 'B', 'PRESS' ,ctrl = True)
+		keymap_RigTools.append((km, kmi))
+		#選択ボーンからボーン生成
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.setparentposemode', 'P', 'PRESS' ,ctrl = True)
+		keymap_RigTools.append((km, kmi))
+		#選択ボーンのペアレントクリア
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.clearparentposemode', 'P', 'PRESS' ,shift= True)
+		keymap_RigTools.append((km, kmi))
 
 		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
 		#OtherTools
@@ -250,6 +298,13 @@ def remove_hotkey():
 	for km, kmi in keymap_Softimage:
 		km.keymap_items.remove(kmi)
 	keymap_Softimage.clear()
+	for km, kmi in keymap_RigTools:
+		km.keymap_items.remove(kmi)
+	keymap_RigTools.clear()
+	for km, kmi in keymap_OtherTools:
+		km.keymap_items.remove(kmi)
+	keymap_OtherTools.clear()
+
 
 
 #読み込んだファイルからクラスを読み込み
@@ -279,7 +334,10 @@ KnifeProject.KnifeProject_OT_CreateSeam_SelFaceBorder,
 SeparateComponet_keep.SeparateComponent_OT_object,
 
 Tgl_Pivot.tglPivot_OT_object,
-clipbord_SelectObjectName.clipbord_select_object_OT_object
+clipbord_SelectObjectName.clipbord_select_object_OT_object,
+RIG_BoneTools.MakeBone_OT_object,
+RIG_BoneTools.SetParent_OT_object,
+RIG_BoneTools.ClearParent_OT_object
 )
 
 
@@ -287,7 +345,7 @@ def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
 	add_hotkey()
-	
+
 
 	#辞書登録
 	translation_dict = GetTranslationDict()
@@ -297,7 +355,7 @@ def unregister():
 	for cls in reversed(classes):
 		bpy.utils.unregister_class(cls)
 	remove_hotkey()
-	
+
 	#辞書解除
 	bpy.app.translations.unregister(__name__)
 

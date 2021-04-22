@@ -1,0 +1,7 @@
+import bpy
+import importlib
+from SItoB.cvELD_RigTools import RIG_BoneTools
+importlib.reload(RIG_BoneTools)
+
+
+cvELD_RigTools.SelectBoneTwo()
