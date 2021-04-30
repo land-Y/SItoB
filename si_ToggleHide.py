@@ -37,25 +37,21 @@ class OUTLINER_OT_si_toggle_hide(bpy.types.Operator):
         return __class__.area
 
     def execute(self, context):
-        objs = context.view_layer.objects
+        objs = bpy.context.view_layer.objects
         sel_objs = {o for o in objs if o.select_get()}
-        hid_objs = {o for o in objs if o.hide_get()}
+        hid_objs = {o for o in objs if o.hide_viewport == True}
 
-        # Hide selected
-        for o in sel_objs:
-            o.hide_set(True)
 
-        # Unhide hidden
-        for o in hid_objs:
-            o.hide_set(False)
-        for o in hid_objs:
-            o.select_set(True)
-        # Select objects marked in outliner
-        bpy.ops.outliner.object_operation(
-            {'area': __class__.area}, type='SELECT')
+        if len(sel_objs) == 0 :
+            print("0")
+            for o in hid_objs:
+                o.hide_viewport = False
+                o.hide_render = False
+            for o in hid_objs:
+                o.select_set(True)
 
-        # Re-hide others
-        for o in hid_objs:
-            if not o.select_get():
-                o.hide_set(True)
+        else:
+            for o in sel_objs:
+                o.hide_viewport = True
+                o.hide_render = True
         return {'FINISHED'}
