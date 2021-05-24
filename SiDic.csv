@@ -22,7 +22,8 @@
 "ピボットモードをトグル","toggle pivot mode"
 "選択ボーン名をクリップボードにコピー","clipbord select object"
 
-"2選択ボーンの間にボーン生成（POSE可）","MakeBone can PoseMode"
+"1選択ボーンにボーン生成（POSE可）","1SelectBone MakeBone(Pose OK)"
+"2選択ボーンの間にボーン生成（POSE可）","2SelectBone Between MakeBone(Pose OK)"
 "最後に選択したボーンに親子付（POSE可）","ParentBone can PoseMode"
 "ペアレントのクリア（POSE可）","ClearParent can PoseMode"
 "ボーンの削除（POSE可）","DeleteBone can PoseMode"

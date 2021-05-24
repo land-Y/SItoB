@@ -254,11 +254,15 @@ def add_hotkey():
 
 		#-----------Rigging用のツール
 
-		#ポーズボーン中でもペアレントできるようにする
+		#1選択ボーンからボーン生成
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.newbone_fromselect2bone', 'B', 'PRESS' ,ctrl = True)
+		kmi = km.keymap_items.new('armature.newbone_fromselect1bone', 'B', 'PRESS' ,ctrl = True)
 		keymap_RigTools.append((km, kmi))
-		#選択ボーンからボーン生成
+		#2選択ボーンからボーン生成
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.newbone_fromselect2bone', 'B', 'PRESS' ,ctrl = True,shift= True)
+		keymap_RigTools.append((km, kmi))
+		#ポーズボーン中でもペアレントできるようにする
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('armature.setparentposemode', 'P', 'PRESS' ,ctrl = True)
 		keymap_RigTools.append((km, kmi))
@@ -340,7 +344,8 @@ SeparateComponet_keep.SeparateComponent_OT_object,
 
 Tgl_Pivot.tglPivot_OT_object,
 clipbord_SelectObjectName.clipbord_select_object_OT_object,
-RIG_BoneTools.MakeBone_OT_object,
+RIG_BoneTools.MakeBoneOne_OT_object,
+RIG_BoneTools.MakeBoneTwo_OT_object,
 RIG_BoneTools.SetParent_OT_object,
 RIG_BoneTools.ClearParent_OT_object,
 RIG_BoneTools.DeleteBonePoseMode_OT_object

@@ -22,34 +22,11 @@ class si_BoneTools():
         self.SaveMode = bpy.context.mode
         self.posebones = bpy.context.selected_pose_bones
 
-    def SelectBoneTwo(self):
-        #選択したボーンはA,Bと定義。選択順が判定できるのは2つまで
-        oBones = list()
-        a = self.targetBone
-        oBones.append(a)
-
-        #EDITMODE
-        if bpy.context.mode == "EDIT_ARMATURE":
-            #選択ボーンが一つ以下ならエラー
-            if len(bpy.context.selected_bones) <= 1:
-                raise RuntimeError("Please select two or more")
-            for b in self.armature.edit_bones:
-                if b.select:
-                    oBones.append(b)
-        #POSEMODE
-        elif bpy.context.mode == "POSE":
-            if len(self.posebones) <= 1:
-                raise RuntimeError("Please select two or more")
-            for b in self.posebones:
-                b = self.armature.bones[b.name]
-                if b.select:
-                    oBones.append(b)
 
 
-        oBones = (list(dict.fromkeys(oBones) ) )
-        A = oBones[1]
-        B = oBones[0]
-        return A,B
+
+
+
 
     def ChangeEditMode(self):
         SaveMode = bpy.context.mode
@@ -65,6 +42,29 @@ class si_BoneTools():
             i.parent = ActiveBone
         bpy.ops.object.mode_set(mode=SaveMode)
         return i
+
+    def newBone_FromSelect1Bone(self,newBoneName = "Bone.000"):
+        SaveMode = self.ChangeEditMode()
+
+
+
+        #Poseからのボーン取得では rollが取得できないのでEditBoneに設定し直す
+        A = self.armature.edit_bones[self.targetBone.name]
+        directionVector = A.matrix @ Vector((0, 1, 0))
+        tailPos = directionVector.lerp(A.head, -2)
+        newBone = self.armature.edit_bones.new(newBoneName)
+        newBone.head = A.tail
+        newBone.tail = tailPos
+        newBone.length = A.length
+        newBone.roll = A.roll
+        bpy.ops.armature.select_all(action='DESELECT')
+        newBone.select = True
+        newBone.select_head = True
+        newBone.select_tail = True
+        bpy.ops.object.mode_set(mode=SaveMode)
+
+
+        return newBone
 
     def newBone_FromSelect2Bone(self,newBoneName = "Bone.000"):
         A,B = self.SelectBoneTwo()
@@ -92,11 +92,10 @@ class si_BoneTools():
         bpy.ops.armature.delete()
         bpy.ops.object.mode_set(mode=SaveMode)
 
-
-class MakeBone_OT_object(bpy.types.Operator):
-    bl_idname = "armature.newbone_fromselect2bone"
-    bl_label = "MakeBone can PoseMode"
-    bl_description = "Make newBone between 2Selected bones"
+class MakeBoneOne_OT_object(bpy.types.Operator):
+    bl_idname = "armature.newbone_fromselect1bone"
+    bl_label = "1SelectBone MakeBone(Pose OK)"
+    bl_description = "1SelectBone MakeBone(Pose OK)"
     bl_options = {'REGISTER', 'UNDO'}
 
     #ボーン名をプレファレンスで決めれる
@@ -104,6 +103,21 @@ class MakeBone_OT_object(bpy.types.Operator):
     #メニューに登録 2箇所。EDITの追加とPOSEのペアレント
     bpy.types.TOPBAR_MT_edit_armature_add.prepend(menu_draw)
     bpy.types.VIEW3D_MT_object_parent.prepend(menu_draw)
+
+    def execute(self, context):
+        Bone = si_BoneTools(bpy.context.active_bone)
+        Bone.newBone_FromSelect1Bone(newBoneName = self.BoneNameProp)
+        return {'FINISHED'}
+
+class MakeBoneTwo_OT_object(bpy.types.Operator):
+    bl_idname = "armature.newbone_fromselect2bone"
+    bl_label = "2SelectBone Between MakeBone(Pose OK)"
+    bl_description = "Make newBone between 2Selected bones"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    #ボーン名をプレファレンスで決めれる
+    BoneNameProp : StringProperty(name = "Bone Name", default = "Bone.000")
+
 
     def execute(self, context):
         Bone = si_BoneTools(bpy.context.active_bone)
