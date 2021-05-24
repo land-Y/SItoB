@@ -1,7 +1,7 @@
 import bpy
 import importlib
-from SItoB.cvELD_RigTools import RIG_BoneTools
+from SItoB import RIG_BoneTools
 importlib.reload(RIG_BoneTools)
 
-
-cvELD_RigTools.SelectBoneTwo()
+Bone = RIG_BoneTools.si_BoneTools(bpy.context.active_bone)
+Bone.newBone_FromSelect1Bone(Parent = "Parent")
