@@ -253,7 +253,10 @@ def add_hotkey():
 		keymap_Softimage.append((km, kmi))
 
 		#-----------Rigging用のツール
-
+		#２選択ボーンのアクティブにフィット＆整列
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.matchbonetwo', 'L', 'PRESS' ,ctrl = True)
+		keymap_RigTools.append((km, kmi))
 		#1選択ボーンからボーン生成
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('armature.newbone_fromselect1bone', 'B', 'PRESS' ,ctrl = True)
@@ -348,6 +351,7 @@ SeparateComponet_keep.SeparateComponent_OT_object,
 
 Tgl_Pivot.tglPivot_OT_object,
 clipbord_SelectObjectName.clipbord_select_object_OT_object,
+RIG_BoneTools.MatchBoneTwo_OT_object,
 RIG_BoneTools.MakeBoneOne_Offset_OT_object,
 RIG_BoneTools.MakeBoneOne_OT_object,
 RIG_BoneTools.MakeBoneTwo_OT_object,

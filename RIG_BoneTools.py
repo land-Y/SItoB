@@ -12,6 +12,7 @@ from .cvELD_RigIcon import *
 
 #メニュー登録関係
 def menu_draw(self, context):
+    self.layout.operator("armature.matchbonetwo")
     self.layout.operator("armature.newbone_fromselect1bone_offset")
     self.layout.operator("armature.newbone_fromselect1bone")
     self.layout.operator("armature.newbone_fromselect2bone")
@@ -217,6 +218,33 @@ class MakeBoneTwo_OT_object(bpy.types.Operator):
     def execute(self, context):
         Bone = si_BoneTools(bpy.context.active_bone)
         Bone.newBone_FromSelect2Bone(newBoneName = self.BoneNameProp)
+        return {'FINISHED'}
+
+class MatchBoneTwo_OT_object(bpy.types.Operator):
+    bl_idname = "armature.matchbonetwo"
+    bl_label = "Fit and aline select 2 bones"
+    bl_description = "Fit and aline select 2 bones"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    AlineBool : BoolProperty(name = "Aline", default = True)
+
+    def execute(self, context):
+        Bone = si_BoneTools(bpy.context.active_bone)
+        #２ボーン選択で１番目をA、２番めをBとする
+        A,B = Bone.SelectBoneTwo()
+
+        #Bボーンの長さを一旦格納。
+        Blen = B.length
+        #Aボーンの向きに合わせる
+        directionVector = A.matrix @ Vector((0, 1, 0))
+        tailPos = directionVector.lerp(A.head, -2)
+        #選択ボーンの順にフィット
+        B.head = A.tail
+        B.roll = A.roll
+        #Bボーンの長さをもとに戻す
+        if self.AlineBool:
+            B.tail = tailPos
+            B.length = Blen
         return {'FINISHED'}
 
 
