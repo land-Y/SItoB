@@ -1,9 +1,9 @@
 bl_info = {
-  "name": "softimage to Blender",
+  "name": "SItoB",
   "author": "cvELD",
-  "version": (1, 1, 0),
-  "blender": (2, 92, 0),
-  "location": "Softimage SHORTCUT",
+  "description": "Softimage to Blender",
+  "version": (1, 3, 0),
+  "blender": (2, 93, 0),
   "support": "COMMUNITY",
   "category": "UI",
   "warning" : "",
@@ -26,7 +26,8 @@ if "bpy" in locals():
 	imp.reload(Tgl_Pivot)
 	imp.reload(clipbord_SelectObjectName)
 	imp.reload(RIG_BoneTools)
-
+	imp.reload(GatorPlus)
+	imp.reload(Sel_whgM_masktgl)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
@@ -40,6 +41,8 @@ else:
 	from . import Tgl_Pivot
 	from . import clipbord_SelectObjectName
 	from . import RIG_BoneTools
+	from . import GatorPlus
+	from . import Sel_whgM_masktgl
 
 
 import bpy
@@ -70,9 +73,67 @@ def GetTranslationDict():
 #-------------------------------------------------------------------
 
 
+#メニューへの登録
+
+#メニュー登録　RIG_BoneTools
+
+class QuiqRigEditModeMenu(bpy.types.Menu):
+	bl_label  = 'QuiqRig'
+	bl_idname = 'ARMATURE_MT_QuiqRig'
+	def draw(self, context):
+		self.layout.operator("armature.newbone_fromselect1bone")
+		self.layout.operator("armature.newbone_fromselect1bone_offset")
+		self.layout.separator()
+		self.layout.operator("armature.setparentposemode")
+		self.layout.operator("armature.clearparentposemode")
+		self.layout.operator("armature.deleteboneposemode")
+		self.layout.operator("armature.makeslider")
+
+class QuiqRig_2seL_EditModeMenu(bpy.types.Menu):
+	bl_label  = 'QuiqRig Select2Bones'
+	bl_idname = 'ARMATURE_MT_QuiqRig_Select2Bones'
+	def draw(self, context):
+		self.layout.operator("armature.newbone_fromselect2bone")
+		self.layout.operator("armature.addjoint")
+		self.layout.operator("armature.ikfromselect2bone")
+		self.layout.separator()
+		self.layout.operator("armature.matchbonetwo")
 
 
-# メニューを構築する関数
+class QuiqRigPoseModeMenu(bpy.types.Menu):
+	bl_label  = 'QuiqRig'
+	bl_idname = 'POSE_MT_QuiqRig'
+	def draw(self, context):
+		self.layout.operator("armature.newbone_fromselect1bone")
+		self.layout.operator("armature.newbone_fromselect1bone_offset")
+		self.layout.separator()
+		self.layout.operator("armature.setparentposemode")
+		self.layout.operator("armature.clearparentposemode")
+		self.layout.operator("armature.deleteboneposemode")
+		self.layout.operator("armature.makeslider")
+
+class QuiqRig_2sel_PoseModeMenu(bpy.types.Menu):
+	bl_label  = 'QuiqRig Select2Bones'
+	bl_idname = 'POSE_MT_QuiqRig_Select2Bones'
+	def draw(self, context):
+		self.layout.operator("armature.newbone_fromselect2bone")
+		self.layout.operator("armature.addjoint")
+		self.layout.operator("armature.ikfromselect2bone")
+		self.layout.separator()
+		self.layout.operator("armature.matchbonetwo")
+
+
+
+def menu_func_edit(self, context):
+	self.layout.menu('ARMATURE_MT_QuiqRig')
+	self.layout.menu('ARMATURE_MT_QuiqRig_Select2Bones')
+
+def menu_func_pose(self, context):
+	self.layout.menu('POSE_MT_QuiqRig')
+	self.layout.menu('POSE_MT_QuiqRig_Select2Bones')
+
+
+# アドオンでの設定関数」
 
 class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 	bl_idname = __name__
@@ -268,6 +329,12 @@ def add_hotkey():
 		#2選択ボーンからボーン生成
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('armature.newbone_fromselect2bone', 'B', 'PRESS' ,ctrl = True,shift= True)
+		#2選択ボーンからジョイントボーン生成
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.addjoint', 'J', 'PRESS' ,ctrl = True,shift= True)
+		#2選択ボーンからIK生成
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.ikfromselect2bone', 'I', 'PRESS' ,ctrl = True,shift= True)
 		keymap_RigTools.append((km, kmi))
 		#ポーズボーン中でもペアレントできるようにする
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
@@ -281,8 +348,28 @@ def add_hotkey():
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('armature.deleteboneposemode', 'DEL', 'PRESS' ,ctrl= True,shift= True)
 		keymap_RigTools.append((km, kmi))
+		#Slyder生成
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('armature.makeslider', 'L', 'PRESS' ,ctrl= True,shift= True, alt = True)
+		keymap_RigTools.append((km, kmi))
 
+		#Gator+ アクティブオブジェクトに選択オブジェクトのモデファイアと頂点グループ転送
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('object.gator_plus', 'G', 'PRESS' ,alt= True)
+		keymap_RigTools.append((km, kmi))
+		#Gator+ Armatureモデファイア削除と頂点グループ除去
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		kmi = km.keymap_items.new('object.gator_plus_deletevertex_modifier', 'G', 'PRESS' ,ctrl= True,shift= True, alt = True)
+		keymap_RigTools.append((km, kmi))
 
+		#ウェイトモードでマスクがONでもクリック選択がが出来る
+		km = wm.keyconfigs.addon.keymaps.new(name = 'Weight Paint')
+		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode', 'LEFTMOUSE', 'PRESS' ,ctrl= True,alt= True)
+		keymap_RigTools.append((km, kmi))
+		#ウェイトモードでマスクがONでもクリック選択がが出来る　トグル選択
+		km = wm.keyconfigs.addon.keymaps.new(name = 'Weight Paint')
+		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode_tgl', 'LEFTMOUSE', 'PRESS' ,shift = True,ctrl= True,alt= True)
+		keymap_RigTools.append((km, kmi))
 		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
 		#OtherTools
 
@@ -300,14 +387,15 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS',ctrl = True ,alt = True )
 		keymap_OtherTools.append((km, kmi))
 
-		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
-		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
-		keymap_OtherTools.append((km, kmi))
 
 		#選択ボーンの名前をクリップボードにコピー。又はオブジェクト名
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('view3d.clipbord_select_object', 'C', 'PRESS',ctrl = True ,shift = True)
+		keymap_OtherTools.append((km, kmi))
+
+		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
+		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 
 def remove_hotkey():
@@ -322,7 +410,6 @@ def remove_hotkey():
 	keymap_OtherTools.clear()
 
 
-
 #読み込んだファイルからクラスを読み込み
 classes = (
 SIKEYMAP_MT_AddonPreferences,
@@ -333,6 +420,11 @@ si_Subdiv.si_minus_subdiv_OT_object,
 si_ResetSRT.si_ResetSRT_OT_object,
 
 si_ResetCamera.si_ResetCamera_OT_object,
+
+QuiqRigEditModeMenu,
+QuiqRig_2seL_EditModeMenu,
+QuiqRigPoseModeMenu,
+QuiqRig_2sel_PoseModeMenu,
 
 si_MoveComponent.si_MoveComponent_OT_object,
 si_MoveComponent.si_MoveComponent1_OT_object,
@@ -357,7 +449,16 @@ RIG_BoneTools.MakeBoneOne_OT_object,
 RIG_BoneTools.MakeBoneTwo_OT_object,
 RIG_BoneTools.SetParent_OT_object,
 RIG_BoneTools.ClearParent_OT_object,
-RIG_BoneTools.DeleteBonePoseMode_OT_object
+RIG_BoneTools.DeleteBonePoseMode_OT_object,
+RIG_BoneTools.MakeBone_AddJoint_OT_object,
+RIG_BoneTools.MakeBone_IKfromSelect2Bone_OT_object,
+RIG_BoneTools.MakeBone_MakeSlider_OT_object,
+
+Sel_whgM_masktgl.sel_wheigtmaskmode_OT_object,
+Sel_whgM_masktgl.sel_wheigtmaskmode_tgl_OT_object,
+
+GatorPlus.gator_plus_OT_object,
+GatorPlus.gator_plus_DelArmVertex_OT_object,
 )
 
 
@@ -366,7 +467,10 @@ def register():
 		bpy.utils.register_class(cls)
 	add_hotkey()
 
-
+	#メニュー登録
+	bpy.types.TOPBAR_MT_edit_armature_add.prepend(menu_func_edit)
+	bpy.types.VIEW3D_MT_armature_context_menu.append(menu_func_edit)
+	bpy.types.VIEW3D_MT_pose_context_menu.append(menu_func_pose)
 	#辞書登録
 	translation_dict = GetTranslationDict()
 	bpy.app.translations.register(__name__, translation_dict)
@@ -375,7 +479,10 @@ def unregister():
 	for cls in reversed(classes):
 		bpy.utils.unregister_class(cls)
 	remove_hotkey()
-
+	#メニュー削除
+	bpy.types.TOPBAR_MT_edit_armature_add.remove(menu_func_edit)
+	bpy.types.VIEW3D_MT_armature_context_menu.remove(menu_func_edit)
+	bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_func_pose)
 	#辞書解除
 	bpy.app.translations.unregister(__name__)
 

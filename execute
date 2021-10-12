@@ -3,5 +3,15 @@ import importlib
 from SItoB import RIG_BoneTools
 importlib.reload(RIG_BoneTools)
 
-Bone = RIG_BoneTools.si_BoneTools(bpy.context.active_bone)
-Bone.newBone_FromSelect1Bone(Parent = "Parent")
+
+QUtil = RIG_BoneTools.QuickBone_Utility(bpy.context.active_bone)
+Bone = RIG_BoneTools.QuickBone_Tools(bpy.context.active_bone)
+ABone,BBone,CBone = Bone.newBone_FromSelect2Bone(
+                    oMode = "Stretch",
+                    HeadBoneMake = True,
+                    OffsetBoneMake = True,
+                    oFit = "HtoH"
+                    )
+print(ABone,BBone,CBone)
+
+#QUtil.FitBones(CBone,BBone, C=ABone , FitMethod = "HToH", oAline = False )

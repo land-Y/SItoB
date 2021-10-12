@@ -29,29 +29,35 @@ class OUTLINER_OT_si_toggle_hide(bpy.types.Operator):
     bl_label = "si Toggle Hide"
     bl_options = {'REGISTER', 'UNDO'}
 
-    @classmethod
-    def poll(self, context):
-        ar = context.screen.areas
-        __class__.area = next(
-            (a for a in ar if a.type == 'OUTLINER'), None)
-        return __class__.area
 
     def execute(self, context):
         objs = bpy.context.view_layer.objects
         sel_objs = {o for o in objs if o.select_get()}
         hid_objs = {o for o in objs if o.hide_viewport == True}
 
+        if context.area.type == 'OUTLINER':
+            #アウトライナー上で実行すれば、ハイド中でもオブジェクトビューのトグルができる
+            OutList = []
+            for item in context.selected_ids:
+                if item.bl_rna.identifier == "Object":
+                    OutList.append(item.name)
 
-        if len(sel_objs) == 0 :
-            print("0")
-            for o in hid_objs:
-                o.hide_viewport = False
-                o.hide_render = False
-            for o in hid_objs:
-                o.select_set(True)
-
+            for o in OutList:
+                oBlool = bpy.data.objects[o].hide_render
+                print(oBlool)
+                bpy.data.objects[o].hide_render = not oBlool
+                bpy.data.objects[o].hide_viewport = not  oBlool
         else:
-            for o in sel_objs:
-                o.hide_viewport = True
-                o.hide_render = True
+            #ビューポート中では以下のスクリプトが実行される
+            if len(sel_objs) == 0 :
+                for o in hid_objs:
+                    o.hide_viewport = False
+                    o.hide_render = False
+                for o in hid_objs:
+                    o.select_set(True)
+
+            else:
+                for o in sel_objs:
+                    o.hide_viewport = True
+                    o.hide_render = True
         return {'FINISHED'}

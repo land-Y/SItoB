@@ -22,9 +22,21 @@
 "ピボットモードをトグル","toggle pivot mode"
 "選択ボーン名をクリップボードにコピー","clipbord select object"
 
-"選択ボーンにオフセット用ボーン生成（POSE可）","OffsetBone(Pose OK)"
-"1選択ボーンにボーン生成（POSE可）","1SelectBone MakeBone(Pose OK)"
-"2選択ボーンの間にボーン生成（POSE可）","2SelectBone Between MakeBone(Pose OK)"
-"最後に選択したボーンに親子付（POSE可）","ParentBone can PoseMode"
-"ペアレントのクリア（POSE可）","ClearParent can PoseMode"
-"ボーンの削除（POSE可）","DeleteBone can PoseMode"
+
+"ボーン生成","MakeBone"
+"オフセット用ボーン生成","OffsetBone"
+"間にボーン生成","Between MakeBone"
+"「膝や肘」用3関節ボーン生成","Add Joint"
+"IK、2選択でチェーンの長さ自動設定","IK from 2SelectBones"
+
+"ボーンをフィット","Fit and aline select 2 bones"
+"最後に選択したボーンに親子付","SetParent"
+"ペアレント","SetParent"
+"ペアレントのクリア","ClearParent"
+"ボーンの削除","DeleteBone"
+
+"GATOR+ 最後の選択オブジェクトに適応","Copy Modifier_Armature from ActiveObject"
+"未ロック頂点グループ&Armatura削除","Delete 'unlocked vertex groups' before Modifire transfer"
+
+"ウェイトモードのマスク中でもボーン選択","WeightMask mode Can SelectBone"
+"ウェイトモードのマスク中でもボーン選択トグル追加","WeightMask mode Can SelectBone tgl"
