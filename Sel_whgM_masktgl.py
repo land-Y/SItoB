@@ -1,10 +1,10 @@
 import bpy
 
-
 def sel_wheigtmaskmode(BoolToggle = False):
     #ウェイトペイントモードの時だけ実行できる
     oMode = bpy.context.mode
     if oMode == "PAINT_WEIGHT":
+        bpy.ops.view3d.select('INVOKE_DEFAULT',toggle=BoolToggle)
         for Meshs in bpy.data.meshes:
             if Meshs.use_paint_mask == True:
                 Meshs.use_paint_mask = False
