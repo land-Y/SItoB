@@ -1,8 +1,6 @@
 import bpy
 from bpy.props import BoolProperty
 
-
-
 #法線をアクティブにする、既にチェック済み場合は無視。
 def oSm(b):
     for o in bpy.context.selected_objects:
@@ -75,7 +73,7 @@ def xsisubdiv(oL,oAdd):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
     for o in bpy.context.selected_objects:
         #メッシュか判定
-        if o.type == 'MESH' or 'CURVE':
+        if o.type == 'MESH' and 'CURVE':
             #名称規則でSI_subdivが存在しなければ新規でモデファイア生成
             if o.modifiers.get("SI_subdiv") == None:
                 #すでに知らん名前のサブディビモデファイアがあれば全てさよならグッバイ
@@ -106,7 +104,7 @@ class si_del_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_del_sudiv"
     bl_label = "Delete Subdivision"
     bl_description = "Subdivisions like Softimage"
-    bl_options = {'REGISTER', 'UNDO'} 
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         delete_subdiv()
@@ -118,7 +116,7 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_add_sudiv"
     bl_label = "Add Subdivision"
     bl_description = "Subdivisions like Softimage"
-    bl_options = {'REGISTER', 'UNDO'} 
+    bl_options = {'REGISTER', 'UNDO'}
 
     #モデファイアを最後に移動するオプション
     si_moveindex = BoolProperty(default=True, name = "Move Modifire", description = "Move Modifire")
@@ -126,7 +124,7 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
     def execute(self,context):
         si_active_normal()
         xsisubdiv(1,1)
-        
+
         if self.si_moveindex:
             #選択オブジェクトからモデファイア数を戻す
             num = GetModifires()
@@ -138,7 +136,7 @@ class si_minus_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_minus_sudiv"
     bl_label = "Subtract subdivision"
     bl_description = "Subdivisions like Softimage"
-    bl_options = {'REGISTER', 'UNDO'} 
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self,context):
         xsisubdiv(1,-1)
