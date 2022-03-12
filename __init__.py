@@ -2,7 +2,7 @@ bl_info = {
   "name": "SItoB",
   "author": "cvELD",
   "description": "Softimage to Blender",
-  "version": (1, 3, 0),
+  "version": (1, 3, 1),
   "blender": (2, 93, 0),
   "support": "COMMUNITY",
   "category": "UI",

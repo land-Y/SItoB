@@ -1,49 +1,49 @@
 import bpy
-from bpy.props import BoolProperty
+from bpy.props import EnumProperty
 
-
-
-def set_active_tool(tool_name):
-    for area in bpy.context.screen.areas:
-        if area.type == "VIEW_3D":
-            override = bpy.context.copy()
-            override["space_data"] = area.spaces[0]
-            override["area"] = area
-            bpy.ops.wm.tool_set_by_id(override, name=tool_name)
-    
-
-def TglCursor(oStartSnap,oEndSnap,oShowCursor):
-    Scene = bpy.data.scenes['Scene']
-    Snap = Scene.tool_settings.use_snap
-    SnapElement = Scene.tool_settings.snap_elements
-    Tra = Scene.transform_orientation_slots[0].type
-    Pivot = Scene.tool_settings.transform_pivot_point
-    ovl = bpy.context.space_data.overlay
-
-    if Tra != 'CURSOR':
-        set_active_tool("builtin.cursor")
-        Scene.transform_orientation_slots[0].type = 'CURSOR'
-        ovl.show_cursor = True
-        Scene.tool_settings.use_snap = oStartSnap
-        Scene.tool_settings.snap_elements = {'VERTEX'}
-        Scene.tool_settings.transform_pivot_point = 'CURSOR'
-    else:
-        Scene.transform_orientation_slots[0].type = 'GLOBAL'
-        Scene.tool_settings.use_snap = oEndSnap
-        Scene.tool_settings.transform_pivot_point = 'BOUNDING_BOX_CENTER'
-        ovl.show_cursor = oShowCursor
+def TglCorsor(PivotMode_A,PivotMode_B):
+    Seenes = bpy.data.scenes
+    for Seene in Seenes:
+        SeeneTool = Seene.tool_settings.transform_pivot_point
+        if not SeeneTool == PivotMode_A:
+            Seene.tool_settings.transform_pivot_point = PivotMode_A
+        else:
+            Seene.tool_settings.transform_pivot_point = PivotMode_B
 
 class tglPivot_OT_object(bpy.types.Operator):
     bl_idname = "view3d.toggle_pivot_mode"
     bl_label = "toggle pivot mode"
     bl_description = "toggle pivot mode"
-    bl_options = {'REGISTER', 'UNDO'} 
+    bl_options = {'REGISTER', 'UNDO'}
 
-    bSnap = BoolProperty(default=False, name = "start Snap", description = "Corser Active Snap")
-    eSnap = BoolProperty(default=False, name = "end Snap", description = "Finish Active Snap")
-    oShow = BoolProperty(default=True, name = "Show Cursor", description = "Show cursor")
+    PivotModeA : EnumProperty(
+        name = "Pivot Mode",
+        description = "Pivot Point Select",
+        default = "CURSOR",
+        items=[
+            ("BOUNDING_BOX_CENTER", "BoundingBox", "PivtoMode"),
+            ("CURSOR", "Cursor", "PivtoMode"),
+            ("INDIVIDUAL_ORIGINS", "Origins", "PivtoMode"),
+            ("MEDIAN_POINT", "Median Point", "PivtoMode"),
+            ("ACTIVE_ELEMENT", "Active", "PivtoMode"),
+        ]
+    )
+
+    PivotModeB : EnumProperty(
+        name = "Pivot Mode",
+        description = "Pivot Point Select",
+        default = "INDIVIDUAL_ORIGINS",
+        items=[
+            ("BOUNDING_BOX_CENTER", "BoundingBox", "PivtoMode"),
+            ("CURSOR", "Cursor", "PivtoMode"),
+            ("INDIVIDUAL_ORIGINS", "Origins", "PivtoMode"),
+            ("MEDIAN_POINT", "Median Point", "PivtoMode"),
+            ("ACTIVE_ELEMENT", "Active", "PivtoMode"),
+        ]
+    )
+
     def execute(self, context,):
 
-        TglCursor(self.bSnap,self.eSnap,self.oShow)
+        TglCorsor(self.PivotModeA,self.PivotModeB)
 
         return {'FINISHED'}
