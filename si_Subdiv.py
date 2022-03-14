@@ -73,7 +73,7 @@ def xsisubdiv(oL,oAdd):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
     for o in bpy.context.selected_objects:
         #メッシュか判定
-        if o.type == 'MESH' and 'CURVE':
+        if o.type == 'MESH' or 'CURVE':
             #名称規則でSI_subdivが存在しなければ新規でモデファイア生成
             if o.modifiers.get("SI_subdiv") == None:
                 #すでに知らん名前のサブディビモデファイアがあれば全てさよならグッバイ
@@ -91,7 +91,7 @@ def xsisubdiv(oL,oAdd):
             #ただし、知らん名前のSUBSURFがあれば放置
             else:
                 for m in o.modifiers:
-                    if(m.type == "SUBSURF" and m.name =="SI_subdiv"):
+                    if(m.type == "SUBSURF" or m.name =="SI_subdiv"):
                         m.render_levels = m.render_levels+ oAdd
                         m.levels = m.levels+ oAdd
                         print(o.name + " subdiv level " + str(m.levels))
