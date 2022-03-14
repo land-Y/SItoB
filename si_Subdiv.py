@@ -73,7 +73,7 @@ def xsisubdiv(oL,oAdd):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
     for o in bpy.context.selected_objects:
         #メッシュか判定
-        if o.type == 'MESH' or 'CURVE':
+        if o.type == 'MESH' or o.type == 'CURVE':
             #名称規則でSI_subdivが存在しなければ新規でモデファイア生成
             if o.modifiers.get("SI_subdiv") == None:
                 #すでに知らん名前のサブディビモデファイアがあれば全てさよならグッバイ
