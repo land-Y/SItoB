@@ -387,14 +387,13 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS',ctrl = True ,alt = True )
 		keymap_OtherTools.append((km, kmi))
 
-
 		#選択ボーンの名前をクリップボードにコピー。又はオブジェクト名
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('view3d.clipbord_select_object', 'C', 'PRESS',ctrl = True ,shift = True)
 		keymap_OtherTools.append((km, kmi))
 
 		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Mesh')
+		km = wm.keyconfigs.addon.keymaps.new(name = '3D View')
 		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 

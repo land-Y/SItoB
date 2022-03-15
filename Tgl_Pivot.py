@@ -2,13 +2,13 @@ import bpy
 from bpy.props import EnumProperty
 
 def TglCorsor(PivotMode_A,PivotMode_B):
-    Seenes = bpy.data.scenes
-    for Seene in Seenes:
-        SeeneTool = Seene.tool_settings.transform_pivot_point
+    Scenes = bpy.data.scenes
+    for Scene in Scenes:
+        SeeneTool = Scene.tool_settings.transform_pivot_point
         if not SeeneTool == PivotMode_A:
-            Seene.tool_settings.transform_pivot_point = PivotMode_A
+            Scene.tool_settings.transform_pivot_point = PivotMode_A
         else:
-            Seene.tool_settings.transform_pivot_point = PivotMode_B
+            Scene.tool_settings.transform_pivot_point = PivotMode_B
 
 class tglPivot_OT_object(bpy.types.Operator):
     bl_idname = "view3d.toggle_pivot_mode"
