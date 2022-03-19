@@ -32,7 +32,7 @@ class tglPivot_OT_object(bpy.types.Operator):
     PivotModeB : EnumProperty(
         name = "Pivot Mode",
         description = "Pivot Point Select",
-        default = "INDIVIDUAL_ORIGINS",
+        default = "BOUNDING_BOX_CENTER",
         items=[
             ("BOUNDING_BOX_CENTER", "BoundingBox", "PivtoMode"),
             ("CURSOR", "Cursor", "PivtoMode"),
