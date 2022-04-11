@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty, IntProperty
 
 #法線をアクティブにする、既にチェック済み場合は無視。
 def oSm(b):
@@ -69,10 +69,10 @@ def GetModifires():
         num = len(i.modifiers)
         return num
 
-def xsisubdiv(oL,oAdd):
+def xsisubdiv(oL, oAdd, maxSubdivCount=3):
     #サブディビモデファイアの名前が一致したらプレビューの数値を増やす
     for o in bpy.context.selected_objects:
-        #メッシュか判定
+        #メッシュかカーブ判定
         if o.type == 'MESH' or o.type == 'CURVE':
             #名称規則でSI_subdivが存在しなければ新規でモデファイア生成
             if o.modifiers.get("SI_subdiv") == None:
@@ -91,14 +91,15 @@ def xsisubdiv(oL,oAdd):
             #ただし、知らん名前のSUBSURFがあれば放置
             else:
                 for m in o.modifiers:
-                    if(m.type == "SUBSURF" or m.name =="SI_subdiv"):
-                        m.render_levels = m.render_levels+ oAdd
-                        m.levels = m.levels+ oAdd
-                        print(o.name + " subdiv level " + str(m.levels))
+                    if(m.type == "SUBSURF" or m.name == "SI_subdiv"):
+                        #上限設定
+                        if m.render_levels < maxSubdivCount:
+                            m.render_levels = m.render_levels+ oAdd
+                            m.levels = m.levels+ oAdd
+                            print(o.name + " subdiv level " + str(m.levels))
     #ビューのリフレッシュ
     bpy.context.scene.frame_current = bpy.context.scene.frame_current
     return
-
 
 class si_del_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_del_sudiv"
@@ -119,18 +120,18 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     #モデファイアを最後に移動するオプション
-    si_moveindex = BoolProperty(default=True, name = "Move Modifire", description = "Move Modifire")
+    si_moveindex : BoolProperty(default = True, name = "Move Modifire", description = "Move Modifire")
+    maxSubdivCountInt : IntProperty(default = 3, name = "Max Subdivisions", description = "Max Subdivisions")
 
     def execute(self,context):
         si_active_normal()
-        xsisubdiv(1,1)
+        xsisubdiv(1, 1, maxSubdivCount= self.maxSubdivCountInt)
 
         if self.si_moveindex:
             #選択オブジェクトからモデファイア数を戻す
             num = GetModifires()
             bpy.ops.object.modifier_move_to_index(modifier="SI_subdiv",index= num - 1)
         return {'FINISHED'}
-
 
 class si_minus_subdiv_OT_object(bpy.types.Operator):
     bl_idname = "object.si_minus_sudiv"
@@ -139,5 +140,5 @@ class si_minus_subdiv_OT_object(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self,context):
-        xsisubdiv(1,-1)
+        xsisubdiv(1, -1, maxSubdivCount= 99)
         return {'FINISHED'}
