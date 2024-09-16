@@ -1,6 +1,5 @@
 import bpy
 
-
 #ライトと選択中オブジェクトの合体。名前だけ抽出
 def dontmovecam():
 
@@ -17,7 +16,7 @@ def dontmovecam():
     for o in oCol:
         obj = bpy.context.scene.objects.get(o)
         if obj: obj.select_set(True)
-        
+
     #アクティブビューの取得
     area = bpy.context.space_data
     rg3d = area.region_3d
@@ -37,7 +36,7 @@ def dontmovecam():
 class si_isolate_OT_object(bpy.types.Operator):
     bl_idname = "view3d.si_isolate"
     bl_label = "Isolate Selected"
-    
+
     def execute(self, context):
 
         dontmovecam()
