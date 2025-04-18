@@ -52,3 +52,7 @@ class SeparateComponent_OT_object(bpy.types.Operator):
         SeparateComponent_keep()
         set_active_tool("builtin.transform")
         return {'FINISHED'}
+
+classes = (
+    SeparateComponent_OT_object,
+)

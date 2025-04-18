@@ -33,3 +33,8 @@ class sel_wheigtmaskmode_tgl_OT_object(bpy.types.Operator):
     def execute(self, context):
         sel_wheigtmaskmode(BoolToggle = True)
         return {'FINISHED'}
+
+classes = (
+    sel_wheigtmaskmode_OT_object,
+    sel_wheigtmaskmode_tgl_OT_object,
+)

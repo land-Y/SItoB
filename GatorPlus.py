@@ -103,3 +103,8 @@ class gator_plus_DelArmVertex_OT_object(bpy.types.Operator):
         mod.DeleteGroupDefomers(self.DelUnlockVertexGroup_bool)
         mod.DeleteArmatureModifier(self.DelArmMod_bool)
         return {'FINISHED'}
+
+classes = (
+    gator_plus_OT_object,
+    gator_plus_DelArmVertex_OT_object,
+)

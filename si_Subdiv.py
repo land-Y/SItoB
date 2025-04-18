@@ -94,6 +94,9 @@ class si_del_subdiv_OT_object(bpy.types.Operator):
     bl_description = "Subdivisions like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         delete_subdiv()
         si_noactive_normal()
@@ -104,6 +107,9 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
     bl_label = "Add Subdivision"
     bl_description = "Subdivisions like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
+
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
 
     si_moveindex : BoolProperty(default=True, name="Move Modifire", description="Move Modifire")
     maxSubdivCountInt : IntProperty(default=3, name="Max Subdivisions", description="Max Subdivisions")
@@ -123,6 +129,15 @@ class si_minus_subdiv_OT_object(bpy.types.Operator):
     bl_description = "Subdivisions like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         xsisubdiv(1, -1, maxSubdivCount=99)
         return {'FINISHED'}
+
+classes = (
+    si_del_subdiv_OT_object,
+    si_add_subdiv_OT_object,
+    si_minus_subdiv_OT_object,
+)

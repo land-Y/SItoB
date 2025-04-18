@@ -16,6 +16,9 @@ class tglPivot_OT_object(bpy.types.Operator):
     bl_description = "toggle pivot mode"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     PivotModeA : EnumProperty(
         name = "Pivot Mode",
         description = "Pivot Point Select",
@@ -47,3 +50,8 @@ class tglPivot_OT_object(bpy.types.Operator):
         TglCorsor(self.PivotModeA,self.PivotModeB)
 
         return {'FINISHED'}
+
+# クラスの登録は__init__.pyで行う
+classes = (
+    tglPivot_OT_object,
+)

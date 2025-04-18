@@ -35,6 +35,9 @@ class si_MoveComponent_OT_object(bpy.types.Operator):
     bl_description = "Move Component Tool like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         si_MoveComponent(True, True, True, S1)
         return {'FINISHED'}
@@ -44,6 +47,9 @@ class si_MoveComponent1_OT_object(bpy.types.Operator):
     bl_label = "Point Select Tool"
     bl_description = "Point Select Tool like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
+
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
 
     def execute(self, context):
         si_MoveComponent(True, False, False, S2)
@@ -55,6 +61,9 @@ class si_MoveComponent2_OT_object(bpy.types.Operator):
     bl_description = "Edge Select Tool like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         si_MoveComponent(False, True, False, S2)
         return {'FINISHED'}
@@ -65,25 +74,16 @@ class si_MoveComponent3_OT_object(bpy.types.Operator):
     bl_description = "Polygon Select Tool like Softimage"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         si_MoveComponent(False, False, True, S2)
         return {'FINISHED'}
 
-# Registration
 classes = (
     si_MoveComponent_OT_object,
     si_MoveComponent1_OT_object,
     si_MoveComponent2_OT_object,
     si_MoveComponent3_OT_object,
 )
-
-def register():
-    for cls in classes:
-        bpy.utils.register_class(cls)
-
-def unregister():
-    for cls in reversed(classes):
-        bpy.utils.unregister_class(cls)
-
-if __name__ == "__main__":
-    register()

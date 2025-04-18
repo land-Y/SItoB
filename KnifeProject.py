@@ -56,3 +56,9 @@ class KnifeProject_OT_object(bpy.types.Operator):
     def execute(self, context):
         knife_project(False)
         return {'FINISHED'}
+
+classes = (
+    KnifeProject_OT_CreateSeam_SelFaceBorder,
+    KnifeProject_OT_object_cut_through,
+    KnifeProject_OT_object,
+)

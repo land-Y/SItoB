@@ -5,6 +5,9 @@ class OUTLINER_OT_si_toggle_hide(bpy.types.Operator):
     bl_label = "si Toggle Hide"
     bl_options = {'REGISTER', 'UNDO'}
 
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+
     def execute(self, context):
         if context.area.type == 'OUTLINER':
             # アウトライナー上で実行する場合
@@ -32,3 +35,7 @@ class OUTLINER_OT_si_toggle_hide(bpy.types.Operator):
                     obj.select_set(not obj.hide_viewport)
 
         return {'FINISHED'}
+
+classes = (
+    OUTLINER_OT_si_toggle_hide,
+)

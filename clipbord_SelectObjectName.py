@@ -21,3 +21,7 @@ class clipbord_select_object_OT_object(bpy.types.Operator):
 
         return {'FINISHED'}
 
+classes = (
+    clipbord_select_object_OT_object,
+)
+

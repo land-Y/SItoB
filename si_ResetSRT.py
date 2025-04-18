@@ -86,21 +86,20 @@ def si_ResetSRT(oDelta,oVector,oAli):
 
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
-    bl_idname = "object.si_resetsrt"
-    bl_label = "Reset All Transform and Delta"
-    bl_description = "Reset All Transform and Delta"
+    bl_idname = "object.si_reset_srt"
+    bl_label = "Reset SRT"
     bl_options = {'REGISTER', 'UNDO'}
 
-    si_bool : BoolProperty(default=True, name = "Reset Delta", description = "Reset Delta")
-    si_VEC : FloatVectorProperty(subtype='TRANSLATION',default=(0.0, 0.0, 0.0), name = "Offset(BoneOnly)")
-    si_Aline : BoolProperty(default=True, name = "Aline Parent", description = "Aline Parent")
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
 
-    def execute(self, context,):
-        oBool = self.si_bool
-        oVec = self.si_VEC
-        oAli = self.si_Aline
-
-        si_ResetSRT(oBool,oVec,oAli)
-
-
+    def execute(self, context):
+        for obj in context.selected_objects:
+            obj.location = (0, 0, 0)
+            obj.rotation_euler = (0, 0, 0)
+            obj.scale = (1, 1, 1)
         return {'FINISHED'}
+
+classes = (
+    si_ResetSRT_OT_object,
+)

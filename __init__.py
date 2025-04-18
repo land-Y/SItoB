@@ -17,7 +17,6 @@ if "bpy" in locals():
 	imp.reload(si_Subdiv)
 	imp.reload(si_ResetSRT)
 	imp.reload(si_MoveComponent)
-	imp.reload(si_ResetCamera)
 	imp.reload(Tgl_HideObjectType)
 	imp.reload(si_Isolate)
 	imp.reload(SeparateComponet_keep)
@@ -25,14 +24,12 @@ if "bpy" in locals():
 	imp.reload(KnifeProject)
 	imp.reload(Tgl_Pivot)
 	imp.reload(clipbord_SelectObjectName)
-	imp.reload(RIG_BoneTools)
 	imp.reload(GatorPlus)
 	imp.reload(Sel_whgM_masktgl)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
 	from . import si_MoveComponent
-	from . import si_ResetCamera
 	from . import Tgl_HideObjectType
 	from . import si_Isolate
 	from . import SeparateComponet_keep
@@ -40,7 +37,6 @@ else:
 	from . import KnifeProject
 	from . import Tgl_Pivot
 	from . import clipbord_SelectObjectName
-	from . import RIG_BoneTools
 	from . import GatorPlus
 	from . import Sel_whgM_masktgl
 
@@ -271,16 +267,6 @@ def add_hotkey():
 		kmi = km.keymap_items.new('object.si_minus_sudiv', 'NUMPAD_MINUS', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
-		#si_ResetCamera
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('view3d.si_reset_camera', 'R', 'PRESS')
-		keymap_Softimage.append((km, kmi))
-
-		#si_isolate
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('view3d.si_isolate', 'INSERT', 'PRESS')
-		keymap_Softimage.append((km, kmi))
-
         #si_ResetSRT
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS',ctrl = True ,shift = True )
@@ -312,46 +298,6 @@ def add_hotkey():
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
 		kmi = km.keymap_items.new('outliner.si_toggle_hide', 'H', 'PRESS' )
 		keymap_Softimage.append((km, kmi))
-
-		#-----------Rigging用のツール
-		#２選択ボーンのアクティブにフィット＆整列
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.matchbonetwo', 'L', 'PRESS' ,ctrl = True)
-		keymap_RigTools.append((km, kmi))
-		#1選択ボーンからボーン生成
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.newbone_fromselect1bone', 'B', 'PRESS' ,ctrl = True)
-		keymap_RigTools.append((km, kmi))
-		#1選択ボーンからボーン生成（オフセット）
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.newbone_fromselect1bone_offset', 'B', 'PRESS' ,ctrl = True,alt = True)
-		keymap_RigTools.append((km, kmi))
-		#2選択ボーンからボーン生成
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.newbone_fromselect2bone', 'B', 'PRESS' ,ctrl = True,shift= True)
-		#2選択ボーンからジョイントボーン生成
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.addjoint', 'J', 'PRESS' ,ctrl = True,shift= True)
-		#2選択ボーンからIK生成
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.ikfromselect2bone', 'I', 'PRESS' ,ctrl = True,shift= True)
-		keymap_RigTools.append((km, kmi))
-		#ポーズボーン中でもペアレントできるようにする
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.setparentposemode', 'P', 'PRESS' ,ctrl = True)
-		keymap_RigTools.append((km, kmi))
-		#選択ボーンのペアレントクリア
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.clearparentposemode', 'P', 'PRESS' ,shift= True)
-		keymap_RigTools.append((km, kmi))
-		#ボーンのデリートをPoseModeでも
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.deleteboneposemode', 'DEL', 'PRESS' ,ctrl= True,shift= True)
-		keymap_RigTools.append((km, kmi))
-		#Slyder生成
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('armature.makeslider', 'L', 'PRESS' ,ctrl= True,shift= True, alt = True)
-		keymap_RigTools.append((km, kmi))
 
 		#Gator+ アクティブオブジェクトに選択オブジェクトのモデファイアと頂点グループ転送
 		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
@@ -418,8 +364,6 @@ si_Subdiv.si_minus_subdiv_OT_object,
 
 si_ResetSRT.si_ResetSRT_OT_object,
 
-si_ResetCamera.si_ResetCamera_OT_object,
-
 QuiqRigEditModeMenu,
 QuiqRig_2seL_EditModeMenu,
 QuiqRigPoseModeMenu,
@@ -442,16 +386,6 @@ SeparateComponet_keep.SeparateComponent_OT_object,
 
 Tgl_Pivot.tglPivot_OT_object,
 clipbord_SelectObjectName.clipbord_select_object_OT_object,
-RIG_BoneTools.MatchBoneTwo_OT_object,
-RIG_BoneTools.MakeBoneOne_Offset_OT_object,
-RIG_BoneTools.MakeBoneOne_OT_object,
-RIG_BoneTools.MakeBoneTwo_OT_object,
-RIG_BoneTools.SetParent_OT_object,
-RIG_BoneTools.ClearParent_OT_object,
-RIG_BoneTools.DeleteBonePoseMode_OT_object,
-RIG_BoneTools.MakeBone_AddJoint_OT_object,
-RIG_BoneTools.MakeBone_IKfromSelect2Bone_OT_object,
-RIG_BoneTools.MakeBone_MakeSlider_OT_object,
 
 Sel_whgM_masktgl.sel_wheigtmaskmode_OT_object,
 Sel_whgM_masktgl.sel_wheigtmaskmode_tgl_OT_object,
@@ -462,8 +396,15 @@ GatorPlus.gator_plus_DelArmVertex_OT_object,
 
 
 def register():
-	for cls in classes:
+	# 各モジュールのクラスを登録
+	for module in [si_Subdiv, si_ResetSRT, si_MoveComponent, si_Isolate, si_ToggleHide, Tgl_Pivot]:
+		for cls in module.classes:
+			bpy.utils.register_class(cls)
+
+	# その他のクラスを登録
+	for cls in [SIKEYMAP_MT_AddonPreferences, QuiqRigEditModeMenu, QuiqRig_2seL_EditModeMenu, QuiqRigPoseModeMenu, QuiqRig_2sel_PoseModeMenu]:
 		bpy.utils.register_class(cls)
+
 	add_hotkey()
 
 	#メニュー登録
@@ -473,10 +414,22 @@ def register():
 	#辞書登録
 	translation_dict = GetTranslationDict()
 	bpy.app.translations.register(__name__, translation_dict)
+	
+	# Tgl_HideObjectTypeのレジストリ
+	for cls in Tgl_HideObjectType.classes:
+		bpy.utils.register_class(cls)
+	Tgl_HideObjectType.register_properties()
 
 def unregister():
-	for cls in reversed(classes):
+	# 各モジュールのクラスを解除
+	for module in [Tgl_Pivot, Tgl_HideObjectType, si_ToggleHide, si_Isolate, si_MoveComponent, si_ResetSRT, si_Subdiv]:
+		for cls in reversed(module.classes):
+			bpy.utils.unregister_class(cls)
+
+	# その他のクラスを解除
+	for cls in reversed([QuiqRig_2sel_PoseModeMenu, QuiqRigPoseModeMenu, QuiqRig_2seL_EditModeMenu, QuiqRigEditModeMenu, SIKEYMAP_MT_AddonPreferences]):
 		bpy.utils.unregister_class(cls)
+
 	remove_hotkey()
 	#メニュー削除
 	bpy.types.TOPBAR_MT_edit_armature_add.remove(menu_func_edit)
@@ -484,6 +437,11 @@ def unregister():
 	bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_func_pose)
 	#辞書解除
 	bpy.app.translations.unregister(__name__)
+	
+	# Tgl_HideObjectTypeのアンレジストリ
+	for cls in reversed(Tgl_HideObjectType.classes):
+		bpy.utils.unregister_class(cls)
+	Tgl_HideObjectType.unregister_properties()
 
 
 if __name__ == "__main__":
