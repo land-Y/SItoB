@@ -7,6 +7,9 @@ from bpy.props import BoolProperty
 class ArmatureModifier():
     """アクティブオブジェクトのモデファイアにあるArmatureからプロパティ取得"""
     def __init__(self):
+        # アクティブオブジェクトの存在チェック
+        if not bpy.context.active_object:
+            raise ValueError("アクティブなオブジェクトが選択されていません。")
 
         #ウェイト転送オブジェクト入れ
         self.ObjList = []
@@ -20,10 +23,13 @@ class ArmatureModifier():
 
         #アクティブオブジェクトのアーマチュアはfor loopでスコープがずれるので名前で定義
         #モデファイアのプロパティ全部取得
+        self.ActiveObj_Armature = None
         for mod in bpy.data.objects[self.activeObjName].modifiers:
             if mod.type == "ARMATURE":
                 self.ActiveObj_Armature = mod
-        if self.ActiveObj_Armature != None:
+                break
+
+        if self.ActiveObj_Armature is not None:
             self.name = self.ActiveObj_Armature.name
             self.Object = self.ActiveObj_Armature.object
             self.vertex_group  = self.ActiveObj_Armature.vertex_group
@@ -33,6 +39,8 @@ class ArmatureModifier():
             self.use_bone_envelopes = self.ActiveObj_Armature.use_bone_envelopes
             self.show_in_editmode = self.ActiveObj_Armature.show_in_editmode
             self.show_on_cage = self.ActiveObj_Armature.show_on_cage
+        else:
+            raise ValueError("アクティブオブジェクトにアーマチュアモディファイアが存在しません。")
 
     '''最後に選択したオブジェクト（アクティブオブジェクト）で、ウェイト転送を実行。'''
     def TranslateArmature(self):

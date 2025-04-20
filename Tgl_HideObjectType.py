@@ -11,7 +11,8 @@ def register_properties():
     )
 
 def unregister_properties():
-    del Collection.si_hidden_objects
+    if hasattr(Collection, 'si_hidden_objects'):
+        delattr(Collection, 'si_hidden_objects')
 
 def Tgl_HideOverray():
     ovl = bpy.context.space_data.overlay
@@ -47,7 +48,8 @@ def update_hidden_objects_list(hidden_objects):
     if hidden_objects:
         master_collection.si_hidden_objects = ','.join(hidden_objects)
     else:
-        del master_collection.si_hidden_objects
+        if hasattr(master_collection, 'si_hidden_objects'):
+            delattr(master_collection, 'si_hidden_objects')
 
 def toggle_selected_objects_visibility():
     """選択中のオブジェクトの表示/非表示をトグル"""

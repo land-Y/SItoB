@@ -2,8 +2,8 @@ bl_info = {
   "name": "SItoB",
   "author": "cvELD",
   "description": "Softimage to Blender",
-  "version": (1, 3, 1),
-  "blender": (2, 93, 0),
+  "version": (2, 0, 0),
+  "blender": (4, 0, 0),
   "support": "COMMUNITY",
   "category": "UI",
   "warning" : "",
@@ -17,7 +17,6 @@ if "bpy" in locals():
 	imp.reload(si_Subdiv)
 	imp.reload(si_ResetSRT)
 	imp.reload(si_MoveComponent)
-	imp.reload(Tgl_HideObjectType)
 	imp.reload(si_Isolate)
 	imp.reload(SeparateComponet_keep)
 	imp.reload(si_ToggleHide)
@@ -26,11 +25,11 @@ if "bpy" in locals():
 	imp.reload(clipbord_SelectObjectName)
 	imp.reload(GatorPlus)
 	imp.reload(Sel_whgM_masktgl)
+	imp.reload(Tgl_HideObjectType)
 else:
 	from . import si_Subdiv
 	from . import si_ResetSRT
 	from . import si_MoveComponent
-	from . import Tgl_HideObjectType
 	from . import si_Isolate
 	from . import SeparateComponet_keep
 	from . import si_ToggleHide
@@ -39,6 +38,7 @@ else:
 	from . import clipbord_SelectObjectName
 	from . import GatorPlus
 	from . import Sel_whgM_masktgl
+	from . import Tgl_HideObjectType
 
 
 import bpy
@@ -128,118 +128,60 @@ def menu_func_pose(self, context):
 	self.layout.menu('POSE_MT_QuiqRig')
 	self.layout.menu('POSE_MT_QuiqRig_Select2Bones')
 
+# メニューへの登録
+def menu_func_show_hide(self, context):
+    layout = self.layout
+    layout.operator("object.si_toggle_hide", text="ビュー＆レンダー：選択物を隠す/表示")
+    layout.operator("object.si_show_hidden_objects", text="ビュー＆レンダー：隠したオブジェクトを表示")
+    layout.operator("object.si_hide_unselected", text="ビュー＆レンダー：非選択物を隠す")
+    layout.separator()
+    layout.operator("view3d.tgl_hide_object_type", text="オブジェクトタイプで隠す")
 
 # アドオンでの設定関数」
 
 class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
 	bl_idname = __name__
-	tab_addon_menu : EnumProperty(name="Tab", description="", items=[('Keymap', "Softimage", "","KEYINGSET",0),('OtherTools', "OtherTools", "","KEYINGSET2",1), ('RigTools', "RigTools", "","KEYINGSET2",2),('Link', "Link", "","URL",3)], default='Keymap')
-
+	tab_addon_menu : EnumProperty(name="Tab", description="", items=[
+		('Keymap', "Softimage", "","KEYINGSET",0),
+		('OtherTools', "OtherTools", "","KEYINGSET2",1), 
+		('RigTools', "RigTools", "","KEYINGSET2",2),
+		('Link', "Link", "","URL",3)
+	], default='Keymap')
 
 	def draw(self, context):
 		layout = self.layout
-
 		row = layout.row(align=True)
-		row.prop(self, "tab_addon_menu",expand=True)
+		row.prop(self, "tab_addon_menu", expand=True)
 
-		preferences = bpy.context.preferences
-		addon_prefs = bpy.context.preferences.addons[__name__].preferences
-
-		if self.tab_addon_menu=="Keymap":
-			box = layout.box()
-			col = box.column()
-			col.label(text="Keymap List:",icon="KEYINGSET")
-
-
-			wm = bpy.context.window_manager
-			kc = wm.keyconfigs.user
-			old_km_name = ""
-			old_id_l = []
-			for km_add, kmi_add in keymap_Softimage:
-				km = kc.keymaps[km_add.name]
-
-				for kmi_con in km.keymap_items:
-					if kmi_add.idname == kmi_con.idname:
-						if not kmi_con.id in old_id_l:
-							kmi = kmi_con
-							old_id_l.append(kmi_con.id)
-							break
-
-				if kmi:
-					if not km.name == old_km_name:
-						col.label(text=km.name,icon="DOT")
-					col.context_pointer_set("keymap", km)
-					rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
-					col.separator()
-					old_km_name = km.name
-					kmi = None
-
-		#RigTools Tab用
-		elif self.tab_addon_menu=="RigTools":
-			box = layout.box()
-			col = box.column()
-			col.label(text="Keymap List:",icon="KEYINGSET")
-
-
-			wm = bpy.context.window_manager
-			kc = wm.keyconfigs.user
-			old_km_name = ""
-			old_id_l = []
-			for km_add, kmi_add in keymap_RigTools:
-				km = kc.keymaps[km_add.name]
-
-				for kmi_con in km.keymap_items:
-					if kmi_add.idname == kmi_con.idname:
-						if not kmi_con.id in old_id_l:
-							kmi = kmi_con
-							old_id_l.append(kmi_con.id)
-							break
-
-				if kmi:
-					if not km.name == old_km_name:
-						col.label(text=km.name,icon="DOT")
-					col.context_pointer_set("keymap", km)
-					rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
-					col.separator()
-					old_km_name = km.name
-					kmi = None
-
-
-		#OtherToolsタブ用
-		elif self.tab_addon_menu=="OtherTools":
-			box = layout.box()
-			col = box.column()
-			col.label(text="Keymap List:",icon="KEYINGSET")
-
-
-			wm = bpy.context.window_manager
-			kc = wm.keyconfigs.user
-			old_km_name = ""
-			old_id_l = []
-			for km_add, kmi_add in keymap_OtherTools:
-				km = kc.keymaps[km_add.name]
-
-				for kmi_con in km.keymap_items:
-					if kmi_add.idname == kmi_con.idname:
-						if not kmi_con.id in old_id_l:
-							kmi = kmi_con
-							old_id_l.append(kmi_con.id)
-							break
-
-				if kmi:
-					if not km.name == old_km_name:
-						col.label(text=km.name,icon="DOT")
-					col.context_pointer_set("keymap", km)
-					rna_keymap_ui.draw_kmi([], kc, km, kmi, col, 0)
-					col.separator()
-					old_km_name = km.name
-					kmi = None
-
-		elif self.tab_addon_menu=="Link":
+		if self.tab_addon_menu == "Keymap":
+			self.draw_keymap(context, keymap_Softimage)
+		elif self.tab_addon_menu == "RigTools":
+			self.draw_keymap(context, keymap_RigTools)
+		elif self.tab_addon_menu == "OtherTools":
+			self.draw_keymap(context, keymap_OtherTools)
+		elif self.tab_addon_menu == "Link":
 			row = layout.row()
 			row.label(text="Support Twitter:")
-			row.operator( "wm.url_open", text="cvELD", icon="URL").url = "https://twitter.com/cvELD_info"
+			row.operator("wm.url_open", text="cvELD", icon="URL").url = "https://twitter.com/cvELD_info"
 
+	def draw_keymap(self, context, keymap_list):
+		box = self.layout.box()
+		col = box.column()
+		col.label(text="Keymap List:", icon="KEYINGSET")
+
+		wm = context.window_manager
+		kc = wm.keyconfigs.user
+		old_km_name = ""
+
+		for km_add, kmi_add in keymap_list:
+			km = kc.keymaps.get(km_add.name)
+			if km:
+				if not km.name == old_km_name:
+					col.label(text=km.name, icon="DOT")
+				col.context_pointer_set("keymap", km)
+				rna_keymap_ui.draw_kmi([], kc, km, kmi_add, col, 0)
+				col.separator()
+				old_km_name = km.name
 
 keymap_Softimage = []
 keymap_RigTools = []
@@ -251,107 +193,112 @@ def add_hotkey():
 	kc = wm.keyconfigs.addon
 
 	if kc:
-
-		#1
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_del_sudiv', 'NUMPAD_MINUS', 'PRESS' , shift = True )
+		# Softimageキーマップ
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_del_sudiv', 'NUMPAD_MINUS', 'PRESS', shift=True)
 		keymap_Softimage.append((km, kmi))
 
-		#2
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 		kmi = km.keymap_items.new('object.si_add_sudiv', 'NUMPAD_PLUS', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
-        #3
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 		kmi = km.keymap_items.new('object.si_minus_sudiv', 'NUMPAD_MINUS', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
-        #si_ResetSRT
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS',ctrl = True ,shift = True )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_resetsrt', 'R', 'PRESS', ctrl=True, shift=True)
 		keymap_Softimage.append((km, kmi))
 
-
-        #si_movecomponent
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_movecomponent', 'M', 'PRESS' )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_movecomponent', 'M', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
-		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_movecomponent1', 'T', 'ANY' )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_movecomponent1', 'T', 'ANY')
 		keymap_Softimage.append((km, kmi))
 
-		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_movecomponent2', 'E', 'ANY' )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_movecomponent2', 'E', 'ANY')
 		keymap_Softimage.append((km, kmi))
 
-		#si_Active componetnt Vertex Edge Face
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.si_movecomponent3', 'U', 'ANY' )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_movecomponent3', 'U', 'ANY')
 		keymap_Softimage.append((km, kmi))
 
-
-		#si_toggle_hide
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('outliner.si_toggle_hide', 'H', 'PRESS' )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_toggle_hide', 'H', 'PRESS')
 		keymap_Softimage.append((km, kmi))
 
-		#Gator+ アクティブオブジェクトに選択オブジェクトのモデファイアと頂点グループ転送
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.gator_plus', 'G', 'PRESS' ,alt= True)
-		keymap_RigTools.append((km, kmi))
-		#Gator+ Armatureモデファイア削除と頂点グループ除去
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.gator_plus_deletevertex_modifier', 'G', 'PRESS' ,ctrl= True,shift= True, alt = True)
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_show_hidden_objects', 'H', 'PRESS', shift=True)
+		keymap_Softimage.append((km, kmi))
+
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.si_hide_unselected', 'H', 'PRESS', alt=True)
+		keymap_Softimage.append((km, kmi))
+
+		# RigToolsキーマップ
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.gator_plus', 'G', 'PRESS', alt=True)
 		keymap_RigTools.append((km, kmi))
 
-		#ウェイトモードでマスクがONでもクリック選択がが出来る
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Weight Paint')
-		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode', 'LEFTMOUSE', 'PRESS' ,ctrl= True,alt= True)
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.gator_plus_deletevertex_modifier', 'G', 'PRESS', ctrl=True, shift=True, alt=True)
 		keymap_RigTools.append((km, kmi))
-		#ウェイトモードでマスクがONでもクリック選択がが出来る　トグル選択
-		km = wm.keyconfigs.addon.keymaps.new(name = 'Weight Paint')
-		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode_tgl', 'LEFTMOUSE', 'PRESS' ,shift = True,ctrl= True,alt= True)
+
+		km = kc.keymaps.new(name='Weight Paint', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode', 'LEFTMOUSE', 'PRESS', ctrl=True, alt=True)
 		keymap_RigTools.append((km, kmi))
-		#-----------Softimageには無いけど使ってた機能、自作ツール以外のアドオンやハック系などなど
-		#OtherTools
 
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new("view3d.tgl_hide_object_type", 'Q', 'PRESS',ctrl = True)
+		km = kc.keymaps.new(name='Weight Paint', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('view3d.sel_wheigtmaskmode_tgl', 'LEFTMOUSE', 'PRESS', shift=True, ctrl=True, alt=True)
+		keymap_RigTools.append((km, kmi))
+
+		# OtherToolsキーマップ
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('view3d.tgl_hide_object_type', 'Q', 'PRESS', ctrl=True)
 		keymap_OtherTools.append((km, kmi))
 
-		#tgl_hide_object_type オブジェクトビュータイプの表示トグル
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.separatecomponet_keep', 'D', 'PRESS',ctrl = True ,alt = True )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.separatecomponet_keep', 'D', 'PRESS', ctrl=True, alt=True)
 		keymap_OtherTools.append((km, kmi))
 
-		#エディット以外でもナイフプロジェクト カットスルー
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS',ctrl = True ,alt = True )
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('object.knife_project_cut_through', 'N', 'PRESS', ctrl=True, alt=True)
 		keymap_OtherTools.append((km, kmi))
 
-		#選択ボーンの名前をクリップボードにコピー。又はオブジェクト名
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
-		kmi = km.keymap_items.new('view3d.clipbord_select_object', 'C', 'PRESS',ctrl = True ,shift = True)
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
+		kmi = km.keymap_items.new('view3d.clipbord_select_object', 'C', 'PRESS', ctrl=True, shift=True)
 		keymap_OtherTools.append((km, kmi))
 
-		#Pivt modeのスナップやらカーソルに合わせるやらのトグル
-		km = wm.keyconfigs.addon.keymaps.new(name = '3D View', space_type = 'VIEW_3D')
+		km = kc.keymaps.new(name='3D View', space_type='VIEW_3D')
 		kmi = km.keymap_items.new('view3d.toggle_pivot_mode', 'D', 'PRESS')
 		keymap_OtherTools.append((km, kmi))
 
 def remove_hotkey():
 	for km, kmi in keymap_Softimage:
-		km.keymap_items.remove(kmi)
+		if km and kmi:
+			try:
+				km.keymap_items.remove(kmi)
+			except:
+				pass
 	keymap_Softimage.clear()
+	
 	for km, kmi in keymap_RigTools:
-		km.keymap_items.remove(kmi)
+		if km and kmi:
+			try:
+				km.keymap_items.remove(kmi)
+			except:
+				pass
 	keymap_RigTools.clear()
+	
 	for km, kmi in keymap_OtherTools:
-		km.keymap_items.remove(kmi)
+		if km and kmi:
+			try:
+				km.keymap_items.remove(kmi)
+			except:
+				pass
 	keymap_OtherTools.clear()
 
 
@@ -374,9 +321,9 @@ si_MoveComponent.si_MoveComponent1_OT_object,
 si_MoveComponent.si_MoveComponent2_OT_object,
 si_MoveComponent.si_MoveComponent3_OT_object,
 si_Isolate.si_isolate_OT_object,
-si_ToggleHide.OUTLINER_OT_si_toggle_hide,
-
-Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
+si_ToggleHide.SI_OT_toggle_hide,
+si_ToggleHide.SI_OT_Show_Hidden_Objects,
+si_ToggleHide.SI_OT_Hide_Unselected,
 
 KnifeProject.KnifeProject_OT_object_cut_through,
 KnifeProject.KnifeProject_OT_object,
@@ -392,56 +339,69 @@ Sel_whgM_masktgl.sel_wheigtmaskmode_tgl_OT_object,
 
 GatorPlus.gator_plus_OT_object,
 GatorPlus.gator_plus_DelArmVertex_OT_object,
+
+Tgl_HideObjectType.Tgl_HideObjectType_OT_object,
 )
 
 
+# カスタムプロパティの登録
+def register_properties():
+    bpy.types.Scene.SItoBHide = StringProperty(
+        name="SItoBHide",
+        description="非表示オブジェクトのリスト",
+        default=""
+    )
+    bpy.types.Collection.si_hidden_objects = StringProperty(
+        name="SI Hidden Objects",
+        description="非表示オブジェクトのリスト",
+        default=""
+    )
+
+def unregister_properties():
+    del bpy.types.Scene.SItoBHide
+    del bpy.types.Collection.si_hidden_objects
+
 def register():
-	# 各モジュールのクラスを登録
-	for module in [si_Subdiv, si_ResetSRT, si_MoveComponent, si_Isolate, si_ToggleHide, Tgl_Pivot]:
-		for cls in module.classes:
-			bpy.utils.register_class(cls)
+    # カスタムプロパティの登録
+    register_properties()
+    
+    # すべてのクラスを登録
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    
+    # メニュー追加
+    bpy.types.VIEW3D_MT_edit_armature.append(menu_func_edit)
+    bpy.types.VIEW3D_MT_pose.append(menu_func_pose)
+    bpy.types.VIEW3D_MT_object_showhide.append(menu_func_show_hide)
+    
+    # ホットキー登録
+    add_hotkey()
 
-	# その他のクラスを登録
-	for cls in [SIKEYMAP_MT_AddonPreferences, QuiqRigEditModeMenu, QuiqRig_2seL_EditModeMenu, QuiqRigPoseModeMenu, QuiqRig_2sel_PoseModeMenu]:
-		bpy.utils.register_class(cls)
-
-	add_hotkey()
-
-	#メニュー登録
-	bpy.types.TOPBAR_MT_edit_armature_add.prepend(menu_func_edit)
-	bpy.types.VIEW3D_MT_armature_context_menu.append(menu_func_edit)
-	bpy.types.VIEW3D_MT_pose_context_menu.append(menu_func_pose)
-	#辞書登録
-	translation_dict = GetTranslationDict()
-	bpy.app.translations.register(__name__, translation_dict)
-	
-	# Tgl_HideObjectTypeのレジストリ
-	for cls in Tgl_HideObjectType.classes:
-		bpy.utils.register_class(cls)
-	Tgl_HideObjectType.register_properties()
+    #辞書登録
+    translation_dict = GetTranslationDict()
+    bpy.app.translations.register(__name__, translation_dict)
 
 def unregister():
-	# 各モジュールのクラスを解除
-	for module in [Tgl_Pivot, Tgl_HideObjectType, si_ToggleHide, si_Isolate, si_MoveComponent, si_ResetSRT, si_Subdiv]:
-		for cls in reversed(module.classes):
-			bpy.utils.unregister_class(cls)
-
-	# その他のクラスを解除
-	for cls in reversed([QuiqRig_2sel_PoseModeMenu, QuiqRigPoseModeMenu, QuiqRig_2seL_EditModeMenu, QuiqRigEditModeMenu, SIKEYMAP_MT_AddonPreferences]):
-		bpy.utils.unregister_class(cls)
-
-	remove_hotkey()
-	#メニュー削除
-	bpy.types.TOPBAR_MT_edit_armature_add.remove(menu_func_edit)
-	bpy.types.VIEW3D_MT_armature_context_menu.remove(menu_func_edit)
-	bpy.types.VIEW3D_MT_pose_context_menu.remove(menu_func_pose)
-	#辞書解除
-	bpy.app.translations.unregister(__name__)
-	
-	# Tgl_HideObjectTypeのアンレジストリ
-	for cls in reversed(Tgl_HideObjectType.classes):
-		bpy.utils.unregister_class(cls)
-	Tgl_HideObjectType.unregister_properties()
+    # メニュー削除
+    bpy.types.VIEW3D_MT_edit_armature.remove(menu_func_edit)
+    bpy.types.VIEW3D_MT_pose.remove(menu_func_pose)
+    bpy.types.VIEW3D_MT_object_showhide.remove(menu_func_show_hide)
+    
+    # ホットキー削除
+    remove_hotkey()
+    
+    # カスタムプロパティの解除
+    unregister_properties()
+    
+    # 辞書解除
+    bpy.app.translations.unregister(__name__)
+    
+    # すべてのクラスのアンレジストリ
+    for cls in reversed(classes):
+        try:
+            bpy.utils.unregister_class(cls)
+        except:
+            pass  # すでにアンレジストリされている場合はスキップ
 
 
 if __name__ == "__main__":
