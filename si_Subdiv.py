@@ -124,7 +124,7 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
         return {'FINISHED'}
 
 class si_minus_subdiv_OT_object(bpy.types.Operator):
-    bl_idname = "object.si_minus_sudiv"
+    bl_idname = "object.si_minus_subdiv"
     bl_label = "Subtract subdivision"
     bl_description = "Subdivisions like Softimage"
     bl_options = {'REGISTER', 'UNDO'}

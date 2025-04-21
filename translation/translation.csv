@@ -1,0 +1,31 @@
+"サブディビジョン全削除","Delete Subdivision"
+"サブディビジョン追加","Add Subdivision"
+"サブディビジョン減少","Subtract subdivision"
+
+"ムーブコンポーネント","Move Component Tool"
+"ポイント選択","Point Select Tool"
+"エッジ選択","Edge Select Tool"
+"ポリゴン選択","Polygon Select Tool"
+
+"すべての変換をリセット & Delta","Reset All Transform and Delta"
+"リセット カメラ","Reset Camera"
+"リセット デルタ","Reset Delta"
+"サブディビジョンを最後へ","Move Modifire"
+"オブジェクトタイプの表示をトグル","Toggle Hide Object Type"
+"選択の孤立","Isolate Selected"
+"分離（コンポーネント維持)","Separate Componet keep"
+"表示のトグル","SI Toggle Hide"
+"隠したオブジェクトを表示（ビューポート＆レンダー）","SI Show Hidden Objects"
+"選択されていないオブジェクトを隠します（ビューポート＆レンダー）","SI Hide Unselected"
+
+"プロジェクション用のメッシュを選択してメッシュオブジェクトを選択","Please Selecting ProjectionMesh and MeshObject"
+"ナイフ投影（背面を含める）","Knife Project cut through"
+"フェースの境界にシーム","CreateSeam Border of faces"
+"ピボットモードをトグル","toggle pivot mode"
+"選択ボーン名をクリップボードにコピー","clipbord select object"
+
+"GATOR+ 最後の選択オブジェクトに適応","Copy Modifier_Armature from ActiveObject"
+"未ロック頂点グループ&Armatura削除","Delete 'unlocked vertex groups' before Modifire transfer"
+
+"ウェイトモードのマスク中でもボーン選択","WeightMask mode Can SelectBone"
+"ウェイトモードのマスク中でもボーン選択トグル追加","WeightMask mode Can SelectBone tgl"

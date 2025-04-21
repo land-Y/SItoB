@@ -86,7 +86,7 @@ def si_ResetSRT(oDelta,oVector,oAli):
 
 
 class si_ResetSRT_OT_object(bpy.types.Operator):
-    bl_idname = "object.si_reset_srt"
+    bl_idname = "object.si_resetsrt"
     bl_label = "Reset SRT"
     bl_options = {'REGISTER', 'UNDO'}
 
