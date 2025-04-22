@@ -17,6 +17,10 @@
 "表示のトグル","SI Toggle Hide"
 "隠したオブジェクトを表示（ビューポート＆レンダー）","SI Show Hidden Objects"
 "選択されていないオブジェクトを隠します（ビューポート＆レンダー）","SI Hide Unselected"
+"ビューポートで無効","Disable in viewport"
+"ビューポートで隠す","Hide in viewport"
+"レンダーで無効","Disable in render"
+"アウトライナーの制限の切り替えを使用","Use Outliner Restriction"
 
 "プロジェクション用のメッシュを選択してメッシュオブジェクトを選択","Please Selecting ProjectionMesh and MeshObject"
 "ナイフ投影（背面を含める）","Knife Project cut through"
@@ -29,3 +33,4 @@
 
 "ウェイトモードのマスク中でもボーン選択","WeightMask mode Can SelectBone"
 "ウェイトモードのマスク中でもボーン選択トグル追加","WeightMask mode Can SelectBone tgl"
+

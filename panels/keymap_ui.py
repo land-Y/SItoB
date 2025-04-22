@@ -74,6 +74,40 @@ def draw_kmi(display_keymaps, kc, km, kmi, layout, level):
             subrow.prop(kmi, "key_modifier", text="", event=True)
     return box
 
+# 選択の非表示関連コマンドを識別するための定数
+HIDE_COMMANDS = {'object.si_toggle_hide', 'object.si_show_hidden_objects', 'object.si_hide_unselected'}
+
+# 選択の非表示関連のキーマップのみを表示する関数
+def draw_hide_keymap(layout, context, keymap_list):
+    wm = context.window_manager
+    kc = wm.keyconfigs.addon
+    seen = set()
+
+    for km_add, kmi_add in keymap_list:
+        if not km_add or not kmi_add:
+            continue
+
+        # 選択の非表示関連コマンドのみ処理
+        if not hasattr(kmi_add, 'idname') or kmi_add.idname not in HIDE_COMMANDS:
+            continue
+
+        # 重複をスキップ
+        if kmi_add.idname in seen:
+            continue
+        seen.add(kmi_add.idname)
+
+        # 対応するKeyMapオブジェクトを取得
+        km = next((km_tmp for km_tmp in kc.keymaps
+                   if km_tmp.name == km_add.name and km_tmp.space_type == km_add.space_type), None)
+        if not km:
+            continue
+
+        # キーマップアイテムを描画
+        layout.context_pointer_set("keyconfig", kc)
+        layout.context_pointer_set("keymap", km)
+        layout.context_pointer_set("keymap_item", kmi_add)
+        draw_kmi([], kc, km, kmi_add, layout, 0)
+
 def draw_keymap(layout, context, keymap_list):
     box = layout.box()
     col = box.column()
@@ -82,18 +116,13 @@ def draw_keymap(layout, context, keymap_list):
     wm = context.window_manager
     kc = wm.keyconfigs.addon  # アドオン用キー設定を取得
     old_km_name = ""
-    hide_commands = {'object.si_toggle_hide', 'object.si_show_hidden_objects', 'object.si_hide_unselected'}
-    hide_group_header_drawn = False
-    hide_group_separator_drawn = False
-
-    # グループ内の最後のアイテムを事前に特定
-    last_hide_command_index = -1
-    for i, (_, kmi_add) in enumerate(keymap_list):
-        if kmi_add and hasattr(kmi_add, 'idname') and kmi_add.idname in hide_commands:
-            last_hide_command_index = i
 
     for i, (km_add, kmi_add) in enumerate(keymap_list):
         if not km_add or not kmi_add:
+            continue
+            
+        # 選択の非表示関連コマンドはスキップ（別の関数で表示）
+        if hasattr(kmi_add, 'idname') and kmi_add.idname in HIDE_COMMANDS:
             continue
 
         # 対応するKeyMapオブジェクトを取得
@@ -113,35 +142,7 @@ def draw_keymap(layout, context, keymap_list):
 
         # キーマップ名が変わったらラベル表示
         if km.name != old_km_name:
-            if hide_group_header_drawn and not hide_group_separator_drawn:
-                col.separator()
-                hide_group_separator_drawn = True
             col.label(text=km.name, icon="DOT")
             old_km_name = km.name
-            hide_group_header_drawn = False
-            hide_group_separator_drawn = False
 
-        is_hide_command = hasattr(kmi_add, 'idname') and kmi_add.idname in hide_commands
-
-        # 「選択の非表示」グループのヘッダーを描画
-        if is_hide_command and not hide_group_header_drawn:
-            col.separator()
-            col.label(text="選択の非表示:")
-            hide_group_header_drawn = True
-            hide_group_separator_drawn = False
-
-        is_last_item_in_hide_group = (i == last_hide_command_index)
-        if is_last_item_in_hide_group and not hide_group_separator_drawn:
-            col.separator()
-        elif not is_hide_command:
-            next_is_hide_header = False
-            if i + 1 < len(keymap_list):
-                _, next_kmi = keymap_list[i+1]
-                if next_kmi and hasattr(next_kmi, 'idname') and next_kmi.idname in hide_commands and not hide_group_header_drawn:
-                    next_is_hide_header = True
-            if not next_is_hide_header:
-                col.separator()
-
-    # ループ後の仕上げ区切り
-    if hide_group_header_drawn and not hide_group_separator_drawn:
         col.separator() 

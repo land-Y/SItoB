@@ -1,5 +1,7 @@
 import bpy
-from bpy.props import StringProperty
+from bpy.props import StringProperty, BoolProperty
+import addon_utils
+from functools import lru_cache
 
 addon_keymaps = []
 
@@ -15,9 +17,47 @@ def register_properties():
         description="非表示オブジェクトのリスト",
         default=""
     )
+    # 選択の非表示設定用のプロパティは削除（アドオン設定に移動）
 
 def unregister_properties():
     del bpy.types.Scene.SItoBHide
+    # si_use_hide_setプロパティの削除は不要になりました
+
+# キャッシュを使用してアドオン設定取得を高速化
+@lru_cache(maxsize=1)
+def get_addon_preferences():
+    addon_name = "SItoB"
+    addon = next((a for a in addon_utils.modules() if a.bl_info['name'] == addon_name), None)
+    if addon:
+        return bpy.context.preferences.addons[addon.bl_info['name']].preferences
+    return None
+
+# 表示設定を取得する関数（キャッシュ対応）
+def get_visibility_settings():
+    prefs = get_addon_preferences()
+    if prefs:
+        return (
+            prefs.si_use_hide_viewport,
+            prefs.si_use_hide_set,
+            prefs.si_use_hide_render,
+            prefs.si_use_outliner_restriction
+        )
+    # デフォルト値（設定が見つからない場合）
+    return True, True, True, True
+
+# 全てのアウトライナー領域の制限アイコンを表示する
+def show_outliner_restriction_icons():
+    # 全てのスクリーンを検索
+    for screen in bpy.data.screens:
+        # 各スクリーン内のアウトライナー領域を検索
+        for area in screen.areas:
+            if area.type == 'OUTLINER':
+                for space in area.spaces:
+                    if space.type == 'OUTLINER':
+                        # 表示制限アイコンを有効化
+                        space.show_restrict_column_hide = True        # 目のアイコン（非表示）
+                        space.show_restrict_column_viewport = True    # ビューポート表示制限
+                        space.show_restrict_column_render = True      # レンダー表示制限
 
 class SI_OT_toggle_hide(bpy.types.Operator):
     bl_idname = "object.si_toggle_hide"
@@ -33,86 +73,90 @@ class SI_OT_toggle_hide(bpy.types.Operator):
         return context.area.type in {'VIEW_3D', 'OUTLINER'}
 
     def execute(self, context):
+        # 表示設定を取得（一度だけ取得してパフォーマンス向上）
+        use_hide_viewport, use_hide_set, use_hide_render, use_outliner_restriction = get_visibility_settings()
+
+        # アウトライナーの制限切り替え機能が有効な場合、全てのアウトライナーの制限アイコンを表示
+        if use_outliner_restriction:
+            show_outliner_restriction_icons()
+
+        # OUTLINER での処理（より効率的に）
         if context.area.type == 'OUTLINER':
-            # アウトライナー上で実行する場合
-            for item in context.selected_ids:
-                if item.bl_rna.identifier == "Object":
-                    obj = bpy.data.objects[item.name]
-                    obj.hide_viewport = not obj.hide_viewport
-                    obj.hide_render = obj.hide_viewport
+            selected_objs = [bpy.data.objects[item.name] for item in context.selected_ids 
+                             if item.bl_rna.identifier == "Object" and item.name in bpy.data.objects]
+            
+            # 一括で処理して個別の条件チェックを削減
+            for obj in selected_objs:
+                if use_hide_viewport:
+                    new_state = not obj.hide_viewport
+                    obj.hide_viewport = new_state
+                if use_hide_render:
+                    obj.hide_render = new_state if use_hide_viewport else not obj.hide_render
+                if use_hide_set:
+                    obj.hide_set(new_state if use_hide_viewport else not obj.visible_get())
+            
+            context.area.tag_redraw()
             return {'FINISHED'}
 
-        # --- 以下は VIEW_3D での実行時の処理 ---
-        # 対象シーンの取得と存在チェック
+        # VIEW_3D での処理の最適化
         target_scene = bpy.data.scenes.get(scene_name)
-
         if not target_scene:
             self.report({'ERROR'}, f"シーン '{scene_name}' が見つかりません。")
             return {'CANCELLED'}
 
-        # 現在選択されているオブジェクトを取得
+        # 選択されたオブジェクトがある場合の処理（非表示）
         selected_objects = context.selected_objects
-
         if selected_objects:
-            # --- オブジェクトが選択されている場合の処理 (VIEW_3D) ---
-            object_names = []
-
-            # 選択オブジェクトをループし、非表示処理と名前リスト作成
+            # 名前のリストをまとめて作成
+            object_names = [obj.name for obj in selected_objects]
+            
+            # 表示状態の一括変更（ループ内での条件チェックを削減）
             for obj in selected_objects:
-                object_names.append(obj.name)
-
-                # hide_viewport が False なら True にする
-                if obj.hide_viewport is False:
+                if use_hide_viewport:
                     obj.hide_viewport = True
-                # hide_render が False なら True にする
-                if obj.hide_render is False:
+                if use_hide_render:
                     obj.hide_render = True
+                if use_hide_set:
+                    obj.hide_set(True)
 
-            # オブジェクト名をカンマ区切りの文字列にする
-            value_string = ",".join(object_names)
+            # シーンプロパティを更新（一度だけの文字列処理）
+            target_scene[prop_name] = ",".join(object_names)
 
-            # シーンにカスタムプロパティを上書き設定
-            target_scene[prop_name] = value_string
-
-            # 選択を解除 (Object Mode である必要がある)
+            # 選択解除（オブジェクトモードの場合のみ）
             if context.mode == 'OBJECT':
                 bpy.ops.object.select_all(action='DESELECT')
 
+        # 選択されたオブジェクトがない場合の処理（表示）
         else:
-            # --- オブジェクトが選択されていない場合の処理 (VIEW_3D) ---
-            # カスタムプロパティが存在するか確認
             if prop_name in target_scene:
                 value_string = target_scene.get(prop_name, "")
-
-                # プロパティの値が空でないか確認
                 if value_string:
-                    # カンマで分割し、前後の空白を除去した名前のリストを作成
+                    # 名前の一括処理
                     names_to_unhide = [name.strip() for name in value_string.split(',') if name.strip()]
-
-                    if names_to_unhide:
-                        # 念のため現在の選択をクリア (Object Mode である必要がある)
-                        if context.mode == 'OBJECT':
-                            bpy.ops.object.select_all(action='DESELECT')
-
-                        found_count = 0
-                        objects_to_select = []
-
-                        # プロパティに記録された名前のオブジェクトを処理
+                    
+                    if names_to_unhide and context.mode == 'OBJECT':
+                        bpy.ops.object.select_all(action='DESELECT')
+                        
+                        # 事前に存在するオブジェクトのみフィルタリング
+                        valid_objects = []
                         for obj_name in names_to_unhide:
                             obj = bpy.data.objects.get(obj_name)
                             if obj:
-                                obj.hide_viewport = False
-                                obj.hide_render = False
-                                objects_to_select.append(obj)
-                                found_count += 1
-
-                        # 見つかったオブジェクトを選択状態にする
-                        if objects_to_select and context.mode == 'OBJECT':
-                            context.view_layer.objects.active = objects_to_select[0]
-                            for obj in objects_to_select:
+                                if use_hide_viewport:
+                                    obj.hide_viewport = False
+                                if use_hide_render:
+                                    obj.hide_render = False
+                                if use_hide_set:
+                                    obj.hide_set(False)
+                                valid_objects.append(obj)
+                        
+                        # 選択処理を一度にまとめる
+                        if valid_objects:
+                            context.view_layer.objects.active = valid_objects[0]
+                            for obj in valid_objects:
                                 obj.select_set(True)
 
-        # 3Dビューの表示を更新
+        # 表示を更新（必要な場合のみ）
         if context.area:
             context.area.tag_redraw()
         return {'FINISHED'}
@@ -131,34 +175,49 @@ class SI_OT_Show_Hidden_Objects(bpy.types.Operator):
         return context.area.type in {'VIEW_3D', 'OUTLINER'}
 
     def execute(self, context):
+        # 表示設定を取得（アウトライナー制限だけ使用）
+        _, _, _, use_outliner_restriction = get_visibility_settings()
+        
+        # アウトライナーの制限切り替え機能が有効な場合、全てのアウトライナーの制限アイコンを表示
+        if use_outliner_restriction:
+            show_outliner_restriction_icons()
+        
+        # オブジェクトを一度のみ取得し、繰り返し使用（効率的）
+        all_objects = [obj for obj in bpy.data.objects if obj.users > 0]
+        
         if context.area.type == 'OUTLINER':
-            for obj in bpy.data.objects:
-                # アウトライナーに表示される通常のオブジェクトのみを対象にする（ライブラリリンクや非表示データを除く）
-                if obj.users > 0:
-                    obj.hide_viewport = False
-                    obj.hide_render = False
-            # Outlinerを再描画して表示状態を更新
+            # アウトライナーの制限切り替え機能部分は削除（上のshow_outliner_restriction_icons関数で対応）
+            
+            # 一度のループですべての処理を行う
+            for obj in all_objects:
+                obj.hide_viewport = False
+                obj.hide_render = False
+                obj.hide_set(False)
+            
             context.area.tag_redraw()
             return {'FINISHED'}
 
-        # すべての隠されたオブジェクトを表示
-        selected_in_view3d = context.area.type == 'VIEW_3D' # 3Dビューで実行されたか判定
+        # VIEW_3D の処理
+        selected_in_view3d = context.area.type == 'VIEW_3D'
+        
+        # 非表示オブジェクトのみをフィルタリング（処理対象を減らす）
+        hidden_objects = [obj for obj in all_objects if obj.hide_viewport or obj.hide_render]
+        
+        for obj in hidden_objects:
+            obj.hide_viewport = False
+            obj.hide_render = False
+            obj.hide_set(False)
+            # 選択は条件付きで実行
+            if selected_in_view3d:
+                obj.select_set(True)
 
-        for obj in bpy.data.objects:
-            if obj.hide_viewport or obj.hide_render:
-                obj.hide_viewport = False
-                obj.hide_render = False
-                # 3Dビューで実行された場合のみ選択状態にする
-                if selected_in_view3d:
-                    obj.select_set(True)
-
-        self.report({'INFO'}, "すべての隠されたオブジェクトを表示しました")
+        self.report({'INFO'}, f"{len(hidden_objects)}個のオブジェクトを表示しました")
         return {'FINISHED'}
 
 class SI_OT_Hide_Unselected(bpy.types.Operator):
     bl_idname = "object.si_hide_unselected"
     bl_label = "SI Hide Unselected"
-    bl_description = "選択されていないオブジェクトを隠します（ビューポート＆レンダー）"
+    bl_description = "hide_viewport"
     bl_options = {'REGISTER', 'UNDO'}
 
     def __init__(self, *args, **kwargs):
@@ -169,44 +228,76 @@ class SI_OT_Hide_Unselected(bpy.types.Operator):
         return context.area.type in {'VIEW_3D', 'OUTLINER'}
 
     def execute(self, context):
+        # 表示設定を一度だけ取得
+        use_hide_viewport, use_hide_set, use_hide_render, use_outliner_restriction = get_visibility_settings()
+        
+        # アウトライナーの制限切り替え機能が有効な場合、全てのアウトライナーの制限アイコンを表示
+        if use_outliner_restriction:
+            show_outliner_restriction_icons()
+        
+        # すべてのオブジェクトをリストとして取得（効率的にアクセス）
+        all_objects = [obj for obj in bpy.data.objects if obj.users > 0]
+        
         if context.area.type == 'OUTLINER':
-            # アウトライナー上で実行する場合: 選択されたアイテムからオブジェクトを取得
-            selected_objs = []
-            for item in context.selected_ids:
-                if item.bl_rna.identifier == "Object":
-                    obj = bpy.data.objects.get(item.name)
-                    if obj:
-                        selected_objs.append(obj)
+            # アウトライナーの制限切り替え機能部分は削除（上のshow_outliner_restriction_icons関数で対応）
+            
+            # アウトライナーで選択されたオブジェクトのセットを作成（高速検索用）
+            selected_objs = {bpy.data.objects[item.name] for item in context.selected_ids 
+                            if item.bl_rna.identifier == "Object" and item.name in bpy.data.objects}
+            
+            # 隠したオブジェクトのカウント
             hidden_count = 0
-            # 選択されていないオブジェクトを隠し、選択オブジェクトは表示にする
-            for obj in bpy.data.objects:
-                if obj not in selected_objs:
-                    obj.hide_viewport = True
-                    obj.hide_render = True
+            
+            # 選択/非選択で分けて一括処理
+            for obj in all_objects:
+                is_selected = obj in selected_objs
+                
+                # 非選択オブジェクトを隠す
+                if not is_selected:
+                    if use_hide_viewport:
+                        obj.hide_viewport = True
+                    if use_hide_render:
+                        obj.hide_render = True
+                    if use_hide_set:
+                        obj.hide_set(True)
                     hidden_count += 1
+                # 選択オブジェクトを表示
                 else:
-                    obj.hide_viewport = False
-                    obj.hide_render = False
-            # Outlinerを再描画して表示状態を更新
+                    if use_hide_viewport:
+                        obj.hide_viewport = False
+                    if use_hide_render:
+                        obj.hide_render = False
+                    if use_hide_set:
+                        obj.hide_set(False)
+            
             context.area.tag_redraw()
             self.report({'INFO'}, f"{hidden_count}個のオブジェクトを隠しました")
             return {'FINISHED'}
 
-        # 現在選択されているオブジェクトを取得
-        selected_objects = context.selected_objects
+        # VIEW_3D での処理
+        # 選択オブジェクトのセットを作成（高速検索用）
+        selected_objects = set(context.selected_objects)
         hidden_count = 0
 
-        # 選択されていないオブジェクトを隠し、選択オブジェクトは表示にする
-        for obj in bpy.data.objects:
+        # 選択/非選択で分けて一括処理
+        for obj in all_objects:
             if obj not in selected_objects:
-                obj.hide_viewport = True
-                obj.hide_render = True
+                if use_hide_viewport:
+                    obj.hide_viewport = True
+                if use_hide_render:
+                    obj.hide_render = True
+                if use_hide_set:
+                    obj.hide_set(True)
                 hidden_count += 1
             else:
-                obj.hide_viewport = False
-                obj.hide_render = False
+                if use_hide_viewport:
+                    obj.hide_viewport = False
+                if use_hide_render:
+                    obj.hide_render = False
+                if use_hide_set:
+                    obj.hide_set(False)
 
-        # 3Dビューを再描画して表示状態を更新
+        # 必要な場合のみ再描画
         if context.area:
             context.area.tag_redraw()
 
@@ -223,6 +314,8 @@ def register():
     register_properties()
     for cls in classes:
         bpy.utils.register_class(cls)
+    # キャッシュをクリア
+    get_addon_preferences.cache_clear()
 
 def unregister():
     for cls in reversed(classes):
@@ -235,3 +328,5 @@ def unregister():
         except:
             pass
     addon_keymaps.clear()
+    # キャッシュをクリア
+    get_addon_preferences.cache_clear()
