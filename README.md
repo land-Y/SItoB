@@ -1,4 +1,4 @@
-# SItoB
+# cvELD_SItoB
 Softimage to Blender addon
 
 Softimageユーザー向けのBlender用アドオンを公開しています。

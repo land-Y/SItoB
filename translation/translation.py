@@ -21,11 +21,11 @@ def GetTranslation():
 def register():
     translation = GetTranslation()
     if translation:
-        bpy.app.translations.register("SItoB", translation)
+        bpy.app.translations.register("cvELD_SItoB", translation)
 
 # アドオン無効化時に呼び出す解除関数
 def unregister():
     try:
-        bpy.app.translations.unregister("SItoB")
+        bpy.app.translations.unregister("cvELD_SItoB")
     except:
         print("Untranslation failed.") 

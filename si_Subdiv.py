@@ -113,9 +113,11 @@ class si_add_subdiv_OT_object(bpy.types.Operator):
 
     si_moveindex : BoolProperty(default=True, name="Move Modifire", description="Move Modifire")
     maxSubdivCountInt : IntProperty(default=3, name="Max Subdivisions", description="Max Subdivisions")
+    use_auto_smooth : BoolProperty(default=True, name="Auto Smooth", description="Apply auto smooth")
 
     def execute(self, context):
-        si_active_normal()
+        if self.use_auto_smooth:
+            si_active_normal()
         xsisubdiv(1, 1, maxSubdivCount=self.maxSubdivCountInt)
 
         if self.si_moveindex:

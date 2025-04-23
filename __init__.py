@@ -1,5 +1,5 @@
 bl_info = {
-  "name": "SItoB",
+  "name": "cvELD_SItoB",
   "author": "cvELD",
   "description": "Softimage to Blender",
   "version": (2, 0, 0),

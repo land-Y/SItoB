@@ -1,6 +1,6 @@
 import bpy
 import importlib
-from SItoB import RIG_BoneTools
+from cvELD_SItoB import RIG_BoneTools
 importlib.reload(RIG_BoneTools)
 
 

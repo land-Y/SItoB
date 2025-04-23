@@ -1,1 +1,26 @@
- 
+schema_version = "1.0.0"
+
+id = "cvELD_SItoB"
+version = "2.0.0"
+name = "cvELD_SItoB - Softimage to Blender"
+tagline = "Softimageのワークフローに慣れたユーザー向けに設計されたBlenderアドオン。様々な実用的なツールを提供します。"
+maintainer = "cvELD"
+type = "add-on"
+
+website = "https://twitter.com/cvELD_info"
+repository = "https://github.com/land-Y/SItoB"
+tags = ["User Interface", "Modeling", "Object", "Transform", "Workflow"]
+blender_version_min = "4.0.0"
+blender_version_max = "4.4.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+copyright = [
+  "cvELD",
+]
+
+docs_url = "https://github.com/land-Y/SItoB/wiki"
+tracker_url = "https://cveld.net/"
+
+category = "User Interface"

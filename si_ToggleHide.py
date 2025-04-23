@@ -6,27 +6,27 @@ from functools import lru_cache
 addon_keymaps = []
 
 # --- 設定 ---
-prop_name = "SItoBHide"
+prop_name = "cvELD_SItoBHide"
 scene_name = "Scene"
 # --- 設定ここまで ---
 
 # カスタムプロパティの登録
 def register_properties():
-    bpy.types.Scene.SItoBHide = StringProperty(
-        name="SItoBHide",
+    bpy.types.Scene.cvELD_SItoBHide = StringProperty(
+        name="cvELD_SItoBHide",
         description="非表示オブジェクトのリスト",
         default=""
     )
     # 選択の非表示設定用のプロパティは削除（アドオン設定に移動）
 
 def unregister_properties():
-    del bpy.types.Scene.SItoBHide
+    del bpy.types.Scene.cvELD_SItoBHide
     # si_use_hide_setプロパティの削除は不要になりました
 
 # キャッシュを使用してアドオン設定取得を高速化
 @lru_cache(maxsize=1)
 def get_addon_preferences():
-    addon_name = "SItoB"
+    addon_name = "cvELD_SItoB"
     addon = next((a for a in addon_utils.modules() if a.bl_info['name'] == addon_name), None)
     if addon:
         return bpy.context.preferences.addons[addon.bl_info['name']].preferences

@@ -5,7 +5,7 @@ from bpy.types import Collection
 # シーンにカスタムプロパティを追加
 def register_properties():
     Collection.si_hidden_objects = StringProperty(
-        name="SItoBHide",
+        name="cvELD_SItoBHide",
         description="List of hidden objects",
         default=""
     )

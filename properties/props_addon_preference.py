@@ -8,8 +8,8 @@ from .props_keymaps import keymap_Softimage, keymap_RigTools, keymap_OtherTools
 
 # カスタムプロパティの登録
 def register_properties():
-    bpy.types.Scene.SItoBHide = StringProperty(
-        name="SItoBHide",
+    bpy.types.Scene.cvELD_SItoBHide = StringProperty(
+        name="cvELD_SItoBHide",
         description="非表示オブジェクトのリスト",
         default=""
     )
@@ -21,11 +21,11 @@ def register_properties():
 
 # カスタムプロパティの解除
 def unregister_properties():
-    del bpy.types.Scene.SItoBHide
+    del bpy.types.Scene.cvELD_SItoBHide
     del bpy.types.Collection.si_hidden_objects
 
 def get_addon_name():
-    return "SItoB"
+    return "cvELD_SItoB"
 
 class SIKEYMAP_MT_AddonPreferences(AddonPreferences):
     bl_idname = get_addon_name()
