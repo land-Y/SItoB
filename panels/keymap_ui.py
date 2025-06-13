@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import bpy
-# import rna_keymap_ui
+import rna_keymap_ui
 
 
 def _indented_layout(layout, level):
@@ -79,6 +79,7 @@ HIDE_COMMANDS = {'object.si_toggle_hide', 'object.si_show_hidden_objects', 'obje
 
 # 選択の非表示関連のキーマップのみを表示する関数
 def draw_hide_keymap(layout, context, keymap_list):
+    from ..properties.props_keymaps import getKeyMapAndKeyItem
     wm = context.window_manager
     kc = wm.keyconfigs.addon
     seen = set()
@@ -96,25 +97,21 @@ def draw_hide_keymap(layout, context, keymap_list):
             continue
         seen.add(kmi_add.idname)
 
-        # 対応するKeyMapオブジェクトを取得
-        km = next((km_tmp for km_tmp in kc.keymaps
-                   if km_tmp.name == km_add.name and km_tmp.space_type == km_add.space_type), None)
-        if not km:
-            continue
-
-        # キーマップアイテムを描画
-        layout.context_pointer_set("keyconfig", kc)
-        layout.context_pointer_set("keymap", km)
-        layout.context_pointer_set("keymap_item", kmi_add)
-        draw_kmi([], kc, km, kmi_add, layout, 0)
+        # getKeyMapAndKeyItem関数を使用してキーマップ取得
+        km, ki = getKeyMapAndKeyItem(kmi_add.idname)
+        if km and ki:
+            layout.context_pointer_set("keymap", km)
+            rna_keymap_ui.draw_kmi([], kc, km, ki, layout, 0)
 
 def draw_keymap(layout, context, keymap_list):
+    from ..properties.props_keymaps import getKeyMapAndKeyItem
     box = layout.box()
     col = box.column()
     col.label(text="Keymap List:", icon="KEYINGSET")
 
     wm = context.window_manager
-    kc = wm.keyconfigs.addon  # アドオン用キー設定を取得
+    kc = wm.keyconfigs.addon
+    seen = set()
     old_km_name = ""
 
     for i, (km_add, kmi_add) in enumerate(keymap_list):
@@ -125,24 +122,22 @@ def draw_keymap(layout, context, keymap_list):
         if hasattr(kmi_add, 'idname') and kmi_add.idname in HIDE_COMMANDS:
             continue
 
-        # 対応するKeyMapオブジェクトを取得
-        km = None
-        for km_tmp in kc.keymaps:
-            if km_tmp.name == km_add.name and km_tmp.space_type == km_add.space_type:
-                km = km_tmp
-                break
-        if not km:
+        # 重複をスキップ
+        if hasattr(kmi_add, 'idname') and kmi_add.idname in seen:
             continue
+        if hasattr(kmi_add, 'idname'):
+            seen.add(kmi_add.idname)
 
-        # キーマップアイテムを描画
-        col.context_pointer_set("keyconfig", kc)
-        col.context_pointer_set("keymap", km)
-        col.context_pointer_set("keymap_item", kmi_add)
-        draw_kmi([], kc, km, kmi_add, col, 0)
-
-        # キーマップ名が変わったらラベル表示
-        if km.name != old_km_name:
-            col.label(text=km.name, icon="DOT")
-            old_km_name = km.name
-
-        col.separator() 
+        # getKeyMapAndKeyItem関数を使用してキーマップ取得
+        if hasattr(kmi_add, 'idname'):
+            km, ki = getKeyMapAndKeyItem(kmi_add.idname)
+            if km and ki:
+                col.context_pointer_set("keymap", km)
+                rna_keymap_ui.draw_kmi([], kc, km, ki, col, 0)
+                
+                # キーマップ名が変わったらラベル表示
+                if km.name != old_km_name:
+                    col.label(text=km.name, icon="DOT")
+                    old_km_name = km.name
+                
+                col.separator() 

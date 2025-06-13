@@ -4,7 +4,7 @@ from bpy.props import EnumProperty, StringProperty, BoolProperty
 from bpy.types import AddonPreferences
 
 from ..panels.keymap_ui import draw_keymap, draw_hide_keymap
-from .props_keymaps import keymap_Softimage, keymap_RigTools, keymap_OtherTools
+from .props_keymaps import keymap_Softimage, keymap_RigTools, keymap_OtherTools, getKeyMapAndKeyItem
 
 # カスタムプロパティの登録
 def register_properties():
