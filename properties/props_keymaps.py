@@ -11,12 +11,37 @@ keymapDict = {}
 keyMapList = [keymapDict]
 
 def addKeyMap(operatorIdname, key, state, dict, shift=False, ctrl=False, alt=False, keyMapName="3D View", spaceType="VIEW_3D"):
-    """キーマップを追加する関数（サンプルコード参考）"""
+    """キーマップを追加する関数（ユーザー設定を優先するよう修正）"""
     windowManager = bpy.context.window_manager
-    keyMap = windowManager.keyconfigs.addon.keymaps.new(name=keyMapName, space_type=spaceType)
-    keyMapItem = keyMap.keymap_items.new(operatorIdname, key, state, shift=shift, ctrl=ctrl, alt=alt)
-    dict[operatorIdname] = (keyMap, keyMapItem)
-    return (keyMap, keyMapItem)
+
+    # アドオン用キーマップ
+    addon_keyMap = windowManager.keyconfigs.addon.keymaps.new(name=keyMapName, space_type=spaceType)
+    addon_keyMapItem = addon_keyMap.keymap_items.new(operatorIdname, key, state, shift=shift, ctrl=ctrl, alt=alt)
+    dict[operatorIdname] = (addon_keyMap, addon_keyMapItem)
+
+    # ユーザー用キーマップに同じ設定が存在するかチェック
+    user_keyMap = windowManager.keyconfigs.user.keymaps.find(keyMapName, space_type=spaceType)
+    user_has_same = False
+    if user_keyMap:
+        for kmi in user_keyMap.keymap_items:
+            if (
+                kmi.idname == operatorIdname and
+                kmi.type == key and
+                kmi.value == state and
+                kmi.shift == shift and
+                kmi.ctrl == ctrl and
+                kmi.alt == alt
+            ):
+                user_has_same = True
+                break
+    # ユーザー設定がなければ新規登録
+    if not user_has_same:
+        if not user_keyMap:
+            user_keyMap = windowManager.keyconfigs.user.keymaps.new(name=keyMapName, space_type=spaceType)
+        user_keyMapItem = user_keyMap.keymap_items.new(operatorIdname, key, state, shift=shift, ctrl=ctrl, alt=alt)
+    # 既にユーザー設定があれば何もしない
+
+    return (addon_keyMap, addon_keyMapItem)
 
 def getKeyMapAndKeyItem(operatorIdname):
     """キーマップとキーアイテムを取得する関数（サンプルコード参考）"""
